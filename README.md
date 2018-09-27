@@ -1,14 +1,17 @@
 # Notifysales App
->App for notfication to allocation responsible when assignment is about to end.
->Scheduler set to check for new notifications every 10 seconds.
+App for notfication to allocation responsible when assignment is about to end.
+Scheduler set to poll for assignments ending within a configurable number of weeks
+and posting to a slack channel. Now set to check for ending within 8 weeks.
+>Polling and post interval is also configurable in code.
+>The person responsible for allocation per team has to be configured in service.
+>Notified ending assignments and data not complete is stored in a SQL DB.
 
 ### Slack setup
->Slack integration is done by adding the web hook URL for the Slack application Cinode-notisar
-as a ENV variable.
+Slack integration is done by adding the web hook URL for the Slack application 
+as a ENV variable. 
 >The notifications will be sent to all channels where the app is installed.
->https://api.slack.com/apps/ACBKNGLM8
 
-## build and run
+## build with maven
 ```
 mvnw.cmd clean install
 ```
@@ -24,20 +27,23 @@ slack.webhook.url=${SLACK_WEBHOOK_URL} set to channel where notifications is goi
 slack.notification.missingdata.slackid=${MISSING_DATA_SLACK_ID} Slack userid i.e. U12345
 ```
 
-## build and run
+## run from cmd-prompt
 ```
-java -jar target/notifysales-0.0.1-SNAPSHOT.jar
+>java -jar target/notifysales-0.0.1-SNAPSHOT.jar
 ```
 
-## swagger
+## swagger 
+For showing available endpoints for communicating with service via Browser or REST client.
 ```
 http://<host>:8080/swagger-ui.html
 http://<host>:8080/v2/api-docs
 ```
 
 ## heroku deploy
-Requires heroku cli and heroku account connected to team.
+The service is built to run on Heroku with a Heroku Postgres :: Database add-on.
+Requires heroku cli and heroku account connected to service to deploy.
 ### re-deploys
+To re-deploy the service with a new version
 ```
 >heroku deploy:jar target/notifysales-0.0.1-SNAPSHOT.jar --app rocky-anchorage-42328
 >heroku open --app rocky-anchorage-42328
@@ -45,11 +51,14 @@ Requires heroku cli and heroku account connected to team.
 ```
 
 ### for new deploys
+To deploy a completely new service with another name.
 ```
 >heroku plugins:install heroku-cli-deploy
 >heroku create --no-remote    ange usr/psw -> auto name
 ```
 ### stop temporary
+To make the service go to sleep it can be scaled down to 0 dynos.
+It is also possible to block REST access by setting the maintenance to on.
 ```
 >heroku maintenance:on --app rocky-anchorage-42328
 >heroku ps:scale web=0 --app rocky-anchorage-42328
