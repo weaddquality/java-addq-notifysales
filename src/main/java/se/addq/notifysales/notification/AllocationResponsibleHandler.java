@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import se.addq.notifysales.cinode.CinodeApi;
 import se.addq.notifysales.cinode.model.Team;
 import se.addq.notifysales.notification.model.AllocationResponsible;
 import se.addq.notifysales.utils.CsvFileHandler;
@@ -20,14 +21,21 @@ class AllocationResponsibleHandler {
 
     private final CsvFileHandler csvFileHandler;
 
+    private final CinodeApi cinodeApi;
+
     private static final String ALLOCATION_RESPONSIBLE_SOURCE_FILE_PATH = "allocation_responsible_default.csv";
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
-    AllocationResponsibleHandler(CsvFileHandler csvFileHandler) {
+    AllocationResponsibleHandler(CsvFileHandler csvFileHandler, CinodeApi cinodeApi) {
         this.csvFileHandler = csvFileHandler;
         this.allocationResponsibleList = getAllocationResponsibleResourceAsList();
+        this.cinodeApi = cinodeApi;
+    }
+
+    public List<Team> getTeamsForUser(int userId) {
+        return cinodeApi.getTeamsForUser(userId);
     }
 
     AllocationResponsible getAllocationResponsibleForTeam(Team team) {

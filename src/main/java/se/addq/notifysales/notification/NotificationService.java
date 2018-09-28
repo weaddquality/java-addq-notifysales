@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import se.addq.notifysales.cinode.CinodeApi;
-import se.addq.notifysales.cinode.ProjectHandler;
 import se.addq.notifysales.cinode.model.Assignment;
 import se.addq.notifysales.cinode.model.ProjectAssignmentResponse;
 import se.addq.notifysales.cinode.model.ProjectResponse;
@@ -23,36 +21,22 @@ import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Service
 class NotificationService {
 
+    private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     @Value("${slack.notification.before.weeks}")
     private int weeksBeforeAssignmentEndsToNotify;
     @Value("${slack.notification.after.weeks}")
     private int weeksAfterAssignmentEndsToNotify;
-    private final List<NotificationData> incompleteAssignmentList = new ArrayList<>();
-
-    @Autowired
-    private CinodeApi cinodeApi;
-
-    @Autowired
-    private ProjectHandler projectHandler;
-
-    @Autowired
-    private AllocationResponsibleHandler allocationResponsibleHandler;
-
-    List<NotificationData> getAssignmentsToNotify() {
-        return assignmentsToNotify;
-    }
-
-    private final List<NotificationData> assignmentsToNotify = Collections.synchronizedList(new ArrayList<>());
 
 
-    private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final AssignmentHandler assignmentHandler;
+
+    private final AllocationResponsibleHandler allocationResponsibleHandler;
 
     private final NotificationHandler notificationHandler;
 
@@ -60,9 +44,11 @@ class NotificationService {
 
 
     @Autowired
-    public NotificationService(NotificationHandler notificationHandler, MissingDataHandler missingDataHandler) {
+    public NotificationService(NotificationHandler notificationHandler, MissingDataHandler missingDataHandler, AllocationResponsibleHandler allocationResponsibleHandler, AssignmentHandler assignmentHandler) {
         this.notificationHandler = notificationHandler;
         this.missingDataHandler = missingDataHandler;
+        this.allocationResponsibleHandler = allocationResponsibleHandler;
+        this.assignmentHandler = assignmentHandler;
     }
 
 
@@ -70,12 +56,13 @@ class NotificationService {
         checkForEndingAssignments();
         setNotificationDataForAssignment();
         setAllocationResponsible();
-        removeNotCompleteNotifications();
+        notificationHandler.removeNotCompleteAssignments();
     }
 
-    private void removeNotCompleteNotifications() {
-        assignmentsToNotify.removeAll(incompleteAssignmentList);
+    List<NotificationData> getAssignmentsToNotify() {
+        return notificationHandler.getAssignmentsToNotify();
     }
+
 
     byte[] getAllocationConfiguration() {
         return allocationResponsibleHandler.getAllocationResponsibleListAsByteArray();
@@ -86,10 +73,6 @@ class NotificationService {
         missingDataHandler.persistMissingDataNotifications(missingNotificationData);
     }
 
-    void clearAssignmentsToNotify() {
-        log.info("Will clear assignments notified");
-        assignmentsToNotify.clear();
-    }
 
     void clearMissingDataToNotify() {
         log.info("Will clear missing data assignments notified");
@@ -104,10 +87,14 @@ class NotificationService {
         return getListOfItemsAsJson(notificationHandler.getAlreadyNotifiedAssignments());
     }
 
+    void clearAssignmentsToNotify() {
+        notificationHandler.clearAssignmentsToNotify();
+    }
+
     private void checkForEndingAssignments() {
-        List<Integer> projectsResponseList = projectHandler.getProjectSublistToCheckForAssignments();
+        List<Integer> projectsResponseList = assignmentHandler.getProjectSublistToCheckForAssignments();
         for (Integer projectId : projectsResponseList) {
-            ProjectResponse projectResponse = cinodeApi.getProject(projectId);
+            ProjectResponse projectResponse = assignmentHandler.getProject(projectId);
             SleepUtil.sleepMilliSeconds(500);
             for (Assignment assignment : projectResponse.getAssignments()) {
                 log.debug("Assignments: {} {} {} {}", assignment.getTitle(), assignment.getDescription(), assignment.getStartDate(), assignment.getEndDate());
@@ -124,10 +111,10 @@ class NotificationService {
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
     private void setNotificationDataForAssignment() {
-        synchronized (assignmentsToNotify) {
-            for (NotificationData notificationData : assignmentsToNotify) {
+        synchronized (notificationHandler.getAssignmentsToNotify()) {
+            for (NotificationData notificationData : notificationHandler.getAssignmentsToNotify()) {
                 log.info("Get assignment for notification data {}", notificationData);
-                ProjectAssignmentResponse projectAssignmentResponse = cinodeApi.getProjectAssignment(notificationData.getProjectId(), notificationData.getAssignmentId());
+                ProjectAssignmentResponse projectAssignmentResponse = assignmentHandler.getProjectAssignment(notificationData.getProjectId(), notificationData.getAssignmentId());
                 SleepUtil.sleepMilliSeconds(500);
                 if (projectAssignmentResponse.getAssigned() != null) {
                     notificationData.getAssignmentConsultant().setFirstName(projectAssignmentResponse.getAssigned().getFirstName());
@@ -137,19 +124,18 @@ class NotificationService {
                     notificationData.getAssignmentCustomer().setName(projectAssignmentResponse.getCustomer().getName());
                 } else {
                     log.warn("Missing assigned for {} will remove from list to notify", notificationData);
-                    incompleteAssignmentList.add(notificationData);
+                    notificationHandler.incompleteAssignmentAdd(notificationData);
                 }
             }
         }
-
     }
 
     private void setAllocationResponsible() {
-        for (NotificationData notificationData : assignmentsToNotify) {
-            List<Team> teams = cinodeApi.getTeamsForUser(notificationData.getAssignmentConsultant().getUserId());
+        for (NotificationData notificationData : notificationHandler.getAssignmentsToNotify()) {
+            List<Team> teams = assignmentHandler.getTeamsForUser(notificationData.getAssignmentConsultant().getUserId());
             if (teams.isEmpty()) {
                 log.warn("Missing team for user {} in Cinode for {} will remove from list to notify", notificationData.getAssignmentConsultant().getFirstName() + notificationData.getAssignmentConsultant().getLastName(), notificationData);
-                incompleteAssignmentList.add(notificationData);
+                notificationHandler.incompleteAssignmentAdd(notificationData);
                 missingDataHandler.addTeamIsMissingForUser(notificationData);
                 continue;
             }
@@ -157,7 +143,7 @@ class NotificationService {
             AllocationResponsible allocationResponsible = allocationResponsibleHandler.getAllocationResponsibleForTeam(teams.get(0));
             if (allocationResponsible.getName() == null || allocationResponsible.getName().equals("")) {
                 log.warn("Missing configuration for team {}, will remove from notification list", teams.get(0).getName());
-                incompleteAssignmentList.add(notificationData);
+                notificationHandler.incompleteAssignmentAdd(notificationData);
                 missingDataHandler.addAllocationResponsibleIsMissingForTeam(notificationData, teams.get(0).getName());
                 continue;
             }
@@ -186,7 +172,7 @@ class NotificationService {
             notificationData.setAssignmentTitle(assignment.getTitle());
             notificationData.setEndDate(assignment.getEndDate());
             notificationData.setStartDate(assignment.getStartDate());
-            assignmentsToNotify.add(notificationData);
+            notificationHandler.assignmentsToNotifyAdd(notificationData);
         }
     }
 
@@ -211,7 +197,7 @@ class NotificationService {
                 return true;
             }
         }
-        for (NotificationData assignmentsToNotify : assignmentsToNotify) {
+        for (NotificationData assignmentsToNotify : getAssignmentsToNotify()) {
             if (assignmentId == assignmentsToNotify.getAssignmentId()) {
                 log.debug("Assignment already to be notified {}", assignmentId);
                 return true;

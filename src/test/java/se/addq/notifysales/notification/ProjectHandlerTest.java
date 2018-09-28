@@ -1,4 +1,4 @@
-package se.addq.notifysales.cinode;
+package se.addq.notifysales.notification;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import se.addq.notifysales.cinode.CinodeApi;
 import se.addq.notifysales.cinode.model.ProjectList;
 
 import java.util.ArrayList;
@@ -32,10 +33,10 @@ public class ProjectHandlerTest {
 
     @Test
     public void fetchedSubProjectListWithReversedOrderOnId() {
-        ProjectHandler projectHandler = new ProjectHandler(cinodeApi);
-        projectHandler.setNumberOfProjectsToFetch(2);
+        AssignmentHandler assignmentHandler = new AssignmentHandler(cinodeApi);
+        assignmentHandler.setNumberOfProjectsToFetch(2);
 
-        List<Integer> sublistToCheckForAssignments = projectHandler.getProjectSublistToCheckForAssignments();
+        List<Integer> sublistToCheckForAssignments = assignmentHandler.getProjectSublistToCheckForAssignments();
         assertThat(sublistToCheckForAssignments.get(0)).isEqualTo(125);
         assertThat(sublistToCheckForAssignments.get(1)).isEqualTo(124);
     }
@@ -43,10 +44,10 @@ public class ProjectHandlerTest {
     @Test
     public void fetchedSubProjectListLessLeftThanNumbersToFetch() {
         int expectedSize = projectListList.size();
-        ProjectHandler projectHandler = new ProjectHandler(cinodeApi);
-        projectHandler.setNumberOfProjectsToFetch(expectedSize + 5);
+        AssignmentHandler assignmentHandler = new AssignmentHandler(cinodeApi);
+        assignmentHandler.setNumberOfProjectsToFetch(expectedSize + 5);
 
-        List<Integer> sublistToCheckForAssignments = projectHandler.getProjectSublistToCheckForAssignments();
+        List<Integer> sublistToCheckForAssignments = assignmentHandler.getProjectSublistToCheckForAssignments();
         assertThat(sublistToCheckForAssignments.size()).isEqualTo(expectedSize);
     }
 }

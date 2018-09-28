@@ -1,11 +1,15 @@
-package se.addq.notifysales.cinode;
+package se.addq.notifysales.notification;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import se.addq.notifysales.cinode.CinodeApi;
+import se.addq.notifysales.cinode.model.ProjectAssignmentResponse;
 import se.addq.notifysales.cinode.model.ProjectList;
+import se.addq.notifysales.cinode.model.ProjectResponse;
+import se.addq.notifysales.cinode.model.Team;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -16,7 +20,7 @@ import java.util.List;
 
 //Class for filtering and batching calls on project API
 @Component
-public class ProjectHandler {
+class AssignmentHandler {
 
     private boolean fetchProjects = true;
 
@@ -34,11 +38,24 @@ public class ProjectHandler {
     }
 
     @Autowired
-    ProjectHandler(CinodeApi cinodeApi) {
+    AssignmentHandler(CinodeApi cinodeApi) {
         this.cinodeApi = cinodeApi;
     }
 
-    public List<Integer> getProjectSublistToCheckForAssignments() {
+
+    ProjectResponse getProject(int projectId) {
+        return cinodeApi.getProject(projectId);
+    }
+
+    ProjectAssignmentResponse getProjectAssignment(int projectId, int assignmentId) {
+        return cinodeApi.getProjectAssignment(projectId, assignmentId);
+    }
+
+    List<Team> getTeamsForUser(int userId) {
+        return cinodeApi.getTeamsForUser(userId);
+    }
+
+    List<Integer> getProjectSublistToCheckForAssignments() {
         if (fetchProjects) {
             List<ProjectList> projectListList = cinodeApi.getProjects();
             fetchProjects = false;

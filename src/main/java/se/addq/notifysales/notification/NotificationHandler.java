@@ -11,6 +11,7 @@ import se.addq.notifysales.notification.repository.NotificationDataJpaRepository
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -21,6 +22,10 @@ public class NotificationHandler {
     private final List<NotificationRepoData> notificationRepoDataList;
 
     private final NotificationDataJpaRepository notificationDataJpaRepository;
+
+    private final List<NotificationData> assignmentsToNotify = Collections.synchronizedList(new ArrayList<>());
+
+    private final List<NotificationData> incompleteAssignmentList = new ArrayList<>();
 
 
     @Autowired
@@ -51,5 +56,27 @@ public class NotificationHandler {
 
     List<NotificationRepoData> getAlreadyNotifiedAssignments() {
         return notificationRepoDataList;
+    }
+
+    List<NotificationData> getAssignmentsToNotify() {
+        return assignmentsToNotify;
+    }
+
+    void removeNotCompleteAssignments() {
+        assignmentsToNotify.removeAll(incompleteAssignmentList);
+    }
+
+
+    void clearAssignmentsToNotify() {
+        log.info("Will clear assignments notified");
+        assignmentsToNotify.clear();
+    }
+
+    void incompleteAssignmentAdd(NotificationData notificationData) {
+        incompleteAssignmentList.add(notificationData);
+    }
+
+    void assignmentsToNotifyAdd(NotificationData notificationData) {
+        incompleteAssignmentList.add(notificationData);
     }
 }
