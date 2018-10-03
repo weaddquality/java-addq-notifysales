@@ -10,7 +10,7 @@ import java.lang.invoke.MethodHandles;
 class NotificationMessageCreator {
 
     private static final String MESSAGE_FOR_MISSING_TEAM = "Vi saknar data i Cinode för vilket Team användare %s tillhör och kan inte skicka notifiering till Slack %s";
-    private static final String MESSAGE_FOR_MISSING_ALLOCATION_RESPONSIBLE = "Vi saknar data i konfigurationsfil:'allocation_responsible_default.csv' för allokeringsansvarig för Team:'%s' och kan inte skicka notifiering till Slack %s";
+    private static final String MESSAGE_FOR_MISSING_ALLOCATION_RESPONSIBLE = "Vi saknar data för allokeringsansvarig för Team:'%s' och kan inte skicka notifiering till Slack %s";
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

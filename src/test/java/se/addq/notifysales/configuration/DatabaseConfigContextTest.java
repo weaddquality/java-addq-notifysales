@@ -7,10 +7,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
-import se.addq.notifysales.notification.MissingDataHandler;
-import se.addq.notifysales.notification.NotificationHandler;
+import se.addq.notifysales.notification.repository.MissingDataRepository;
 import se.addq.notifysales.notification.repository.MissingNotificationDataJpaRepository;
 import se.addq.notifysales.notification.repository.NotificationDataJpaRepository;
+import se.addq.notifysales.notification.repository.NotificationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,15 +34,15 @@ public class DatabaseConfigContextTest {
     @Test
     public void checkMissingDataHandlerIsCreated() {
 
-        MissingDataHandler missingDataHandler = databaseConfig.missingDataHandlerInit(missingNotificationDataJpaRepository);
-        assertThat(missingDataHandler).isNotNull();
+        MissingDataRepository missingDataRepository = databaseConfig.missingDataHandlerInit(missingNotificationDataJpaRepository);
+        assertThat(missingDataRepository).isNotNull();
 
     }
 
     @Test
     public void checkNotificationHandlerIsCreated() {
-        NotificationHandler notificationHandler = databaseConfig.notificationHandlerInit(notificationDataJpaRepository);
-        assertThat(notificationHandler).isNotNull();
+        NotificationRepository notificationRepository = databaseConfig.notificationHandlerInit(notificationDataJpaRepository);
+        assertThat(notificationRepository).isNotNull();
     }
 
     @Test

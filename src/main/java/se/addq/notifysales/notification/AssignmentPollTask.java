@@ -15,19 +15,19 @@ class AssignmentPollTask {
 
     private static final int POLLING_INTERVAL_MS = 60 * 1000;
 
-    private final NotificationService notificationService;
+    private final NotificationServiceApi notificationServiceApi;
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
-    AssignmentPollTask(NotificationService notificationService) {
-        this.notificationService = notificationService;
+    AssignmentPollTask(NotificationServiceApi notificationServiceApi) {
+        this.notificationServiceApi = notificationServiceApi;
     }
 
     @Scheduled(fixedRate = POLLING_INTERVAL_MS, initialDelay = POLLING_INTERVAL_DELAY_MS)
     void updateAssignmentListToNotifyInBatch() {
         log.info("Poll assignments from Cinode -> interval {} seconds", POLLING_INTERVAL_MS / 1000);
-        notificationService.updateAssignmentsToNotify();
+        notificationServiceApi.updateAssignmentsToNotify();
     }
 
 }

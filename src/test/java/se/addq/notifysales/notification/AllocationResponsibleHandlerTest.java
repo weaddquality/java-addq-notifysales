@@ -27,6 +27,9 @@ public class AllocationResponsibleHandlerTest {
     @Mock
     private CinodeApi cinodeApi;
 
+    @Mock
+    private MissingDataHandler missingDataHandler;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -38,7 +41,7 @@ public class AllocationResponsibleHandlerTest {
         List<CSVRecord> csvRecordList = csvFileHandler.getListOfCSVRecords("allocation_responsible_test.csv", AllocationCsvHeaders.class);
         Mockito.when(mockCsvFileHandler.getListOfCSVRecords(Mockito.any(), Mockito.any())).thenReturn(csvRecordList);
         Mockito.when(mockCsvFileHandler.getListOfCSVRecordsAsByteArray(Mockito.anyList(), Mockito.any())).thenReturn(new byte[256]);
-        allocationResponsibleHandler = new AllocationResponsibleHandler(mockCsvFileHandler, cinodeApi);
+        allocationResponsibleHandler = new AllocationResponsibleHandler(mockCsvFileHandler, missingDataHandler, cinodeApi);
     }
 
     @Test

@@ -12,7 +12,7 @@ import static org.mockito.Mockito.verify;
 public class AssignmentPollTaskTest {
 
     @Mock
-    private NotificationService notificationService;
+    private NotificationServiceApi notificationService;
 
     @Test
     public void triggerUpdateAssignmentListToNotify() {

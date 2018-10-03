@@ -15,7 +15,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProjectHandlerTest {
+public class AssignmentHandlerTest {
 
     @Mock
     private CinodeApi cinodeApi;

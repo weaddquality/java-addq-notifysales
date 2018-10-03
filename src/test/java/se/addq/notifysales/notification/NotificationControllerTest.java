@@ -40,7 +40,7 @@ public class NotificationControllerTest {
     private SlackApi slackApi;
 
     @MockBean
-    private NotificationService mockNotificationService;
+    private NotificationServiceApi mockNotificationService;
 
     @Test
     public void callingPingWillReturnHttpStatusOKAndInfoThatServiceIsRunning() throws Exception {

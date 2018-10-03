@@ -4,9 +4,14 @@ package se.addq.notifysales.notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import se.addq.notifysales.cinode.CinodeApi;
+import se.addq.notifysales.cinode.model.AssignmentResponse;
+import se.addq.notifysales.cinode.model.ProjectAssignmentResponse;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.model.NotificationRepoData;
-import se.addq.notifysales.notification.repository.NotificationDataJpaRepository;
+import se.addq.notifysales.notification.repository.NotificationRepository;
+import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
@@ -14,23 +19,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
+@Component
 public class NotificationHandler {
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final List<NotificationRepoData> notificationRepoDataList;
 
-    private final NotificationDataJpaRepository notificationDataJpaRepository;
+    private final NotificationRepository notificationRepository;
+
+    private MissingDataHandler missingDataHandler;
+
+    private CinodeApi cinodeApi;
 
     private final List<NotificationData> assignmentsToNotify = Collections.synchronizedList(new ArrayList<>());
 
-    private final List<NotificationData> incompleteAssignmentList = new ArrayList<>();
-
-
     @Autowired
-    public NotificationHandler(NotificationDataJpaRepository notificationDataJpaRepository) {
-        this.notificationDataJpaRepository = notificationDataJpaRepository;
+    public NotificationHandler(NotificationRepository notificationRepository, MissingDataHandler missingDataHandler, CinodeApi cinodeApi) {
+        this.notificationRepository = notificationRepository;
+        this.missingDataHandler = missingDataHandler;
+        this.cinodeApi = cinodeApi;
         this.notificationRepoDataList = getPersistedNotifiedAssignments();
     }
 
@@ -40,17 +48,8 @@ public class NotificationHandler {
         notificationRepoData.setAssignmentId(notificationData.getAssignmentId());
         notificationRepoData.setNotifiedTime(LocalDateTime.now());
         notificationRepoData.setMessage(message);
-        notificationDataJpaRepository.save(notificationRepoData);
+        notificationRepository.saveNotificationData(notificationRepoData);
         notificationRepoDataList.add(notificationRepoData);
-    }
-
-    private List<NotificationRepoData> getPersistedNotifiedAssignments() {
-        log.info("Get saved notification data from storage");
-        List<NotificationRepoData> notificationDataList = new ArrayList<>();
-        Iterable<NotificationRepoData> notificationDataIterable = notificationDataJpaRepository.findAll();
-        notificationDataIterable.forEach(notificationDataList::add);
-        log.info("Got {} notified data items from DB", notificationDataList.size());
-        return notificationDataList;
     }
 
 
@@ -62,21 +61,77 @@ public class NotificationHandler {
         return assignmentsToNotify;
     }
 
-    void removeNotCompleteAssignments() {
-        assignmentsToNotify.removeAll(incompleteAssignmentList);
-    }
-
 
     void clearAssignmentsToNotify() {
         log.info("Will clear assignments notified");
         assignmentsToNotify.clear();
     }
 
-    void incompleteAssignmentAdd(NotificationData notificationData) {
-        incompleteAssignmentList.add(notificationData);
+    void assignmentsToNotifyAdd(List<NotificationData> notificationDataList) {
+        assignmentsToNotify.addAll(notificationDataList);
     }
 
-    void assignmentsToNotifyAdd(NotificationData notificationData) {
-        incompleteAssignmentList.add(notificationData);
+    boolean isToBeNotified(int assignmentId) {
+        return !isAlreadyNotifiedOrToBeNotified(assignmentId) && !missingDataHandler.isIncompleteDataForNotification(assignmentId);
     }
+
+    List<NotificationData> addAssignmentsToNotificationList(List<AssignmentResponse> filteredEndingAssignments) {
+        List<NotificationData> notificationDataList = new ArrayList<>();
+        for (AssignmentResponse assignmentResponse : filteredEndingAssignments) {
+            NotificationData notificationData = addBasicAssignmentDataToNotification(assignmentResponse);
+            addDetailedAssignmentDataToNotification(notificationData);
+            notificationDataList.add(notificationData);
+        }
+        return notificationDataList;
+    }
+
+    private NotificationData addBasicAssignmentDataToNotification(AssignmentResponse assignmentResponse) {
+        NotificationData notificationData = new NotificationData();
+        notificationData.setAssignmentId(assignmentResponse.getId());
+        notificationData.setProjectId(assignmentResponse.getProjectId());
+        notificationData.setAssignmentTitle(assignmentResponse.getTitle());
+        notificationData.setEndDate(assignmentResponse.getEndDate());
+        notificationData.setStartDate(assignmentResponse.getStartDate());
+        return notificationData;
+    }
+
+    private NotificationData addDetailedAssignmentDataToNotification(NotificationData notificationData) {
+        log.info("Get assignment for notification data {}", notificationData);
+        ProjectAssignmentResponse projectAssignmentResponse = cinodeApi.getProjectAssignment(notificationData.getProjectId(), notificationData.getAssignmentId());
+        SleepUtil.sleepMilliSeconds(500);
+        if (projectAssignmentResponse.getAssigned() != null) {
+            notificationData.getAssignmentConsultant().setFirstName(projectAssignmentResponse.getAssigned().getFirstName());
+            notificationData.getAssignmentConsultant().setLastName(projectAssignmentResponse.getAssigned().getLastName());
+            notificationData.getAssignmentConsultant().setUserId(projectAssignmentResponse.getAssigned().getId());
+            notificationData.getAssignmentCustomer().setId(projectAssignmentResponse.getCustomer().getId());
+            notificationData.getAssignmentCustomer().setName(projectAssignmentResponse.getCustomer().getName());
+        } else {
+            log.warn("Missing assigned for {} will remove from list to notify", notificationData);
+            missingDataHandler.addMissingAssignedForAssignment(notificationData, notificationData.getAssignmentTitle());
+        }
+        return notificationData;
+    }
+
+    private boolean isAlreadyNotifiedOrToBeNotified(int assignmentId) {
+        for (NotificationRepoData assignmentNotified : getAlreadyNotifiedAssignments())
+            if (assignmentId == assignmentNotified.getAssignmentId()) {
+                log.debug("AssignmentResponse already notified {}", assignmentId);
+                return true;
+            }
+        for (NotificationData assignmentsToNotify : getAssignmentsToNotify()) {
+            if (assignmentId == assignmentsToNotify.getAssignmentId()) {
+                log.debug("AssignmentResponse already to be notified {}", assignmentId);
+                return true;
+            }
+        }
+        log.debug("AssignmentResponse not already notified or waiting to be notified {}", assignmentId);
+        return false;
+    }
+
+
+    private List<NotificationRepoData> getPersistedNotifiedAssignments() {
+        return notificationRepository.findAllNotificationData();
+    }
+
+
 }

@@ -15,10 +15,5 @@ public class SlackNotification {
         this.text = text;
     }
 
-    @Override
-    public String toString() {
-        return "SlackNotification{" +
-                "text='" + text + '\'' +
-                '}';
-    }
+
 }

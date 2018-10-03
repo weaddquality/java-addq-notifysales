@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import se.addq.notifysales.cinode.CinodeApi;
 import se.addq.notifysales.slack.SlackApi;
 
 import java.lang.invoke.MethodHandles;
@@ -20,22 +19,21 @@ class NotificationController {
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String ALLOCATION_RESPONSIBLE_FILE_PATH = "allocation_responsible_default.csv";
-
-    @Autowired
     private SlackApi slackApi;
 
-    @Autowired
-    private NotificationService notificationService;
+    private NotificationServiceApi notificationService;
 
     @Autowired
-    private CinodeApi cinodeApi;
+    public NotificationController(NotificationServiceApi notificationService, SlackApi slackApi) {
+        this.notificationService = notificationService;
+        this.slackApi = slackApi;
+    }
+
 
     @RequestMapping(value = "/ping", method = RequestMethod.GET)
     public String index() {
         return "Notify Service is up an running!";
     }
-
 
     @RequestMapping(value = "/download/allocation/config/used", method = RequestMethod.GET)
     public ResponseEntity<byte[]> downloadAllocationUsedAsCsv() {

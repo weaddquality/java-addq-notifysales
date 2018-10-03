@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>notifysales</name>
-    <description>Notify sales when assignment change</description>
+    <description>Notify sales when assignmentResponse change</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -28,10 +28,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

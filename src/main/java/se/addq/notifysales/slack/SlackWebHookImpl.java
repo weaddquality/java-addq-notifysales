@@ -37,7 +37,7 @@ public class SlackWebHookImpl implements SlackApi {
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
         SlackNotification slackNotification = new SlackNotification();
         slackNotification.setText(message);
-        String slackMessageJson = JsonUtil.getJsonFromObject(slackNotification);
+        String slackMessageJson = JsonUtil.getJsonFromObject(slackNotification, false);
         HttpEntity<Object> entity = new HttpEntity<>(slackMessageJson, headers);
         String resp = restTemplate.postForObject(slackWebhookUrl, entity, String.class);
         if (OK_RESPONSE_FROM_SLACK.equals(resp)) {

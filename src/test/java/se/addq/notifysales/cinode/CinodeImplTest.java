@@ -115,12 +115,12 @@ public class CinodeImplTest {
     @Test
     public void getProjectShallReturnProjectResponseWithListOfAssignments() {
         ProjectResponse response = new ProjectResponse();
-        List<Assignment> assignmentList = new ArrayList<>();
-        assignmentList.add(new Assignment());
-        response.setAssignments(assignmentList);
+        List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
+        assignmentResponseList.add(new AssignmentResponse());
+        response.setAssignmentResponses(assignmentResponseList);
         setMockitoProjectResponse(response);
         ProjectResponse projectResponse = cinodeApi.getProject(1);
-        assertThat(projectResponse.getAssignments().size()).isNotZero();
+        assertThat(projectResponse.getAssignmentResponses().size()).isNotZero();
     }
 
 

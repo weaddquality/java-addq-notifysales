@@ -13,7 +13,7 @@ public class JsonUtilTest {
 
     @Test
     public void serializeToNullStringWhenNullObject() {
-        String response = JsonUtil.getJsonFromObject(null);
+        String response = JsonUtil.getJsonFromObject(null, false);
         assertThat(response).isEqualTo("null");
     }
 
@@ -22,7 +22,7 @@ public class JsonUtilTest {
     public void serializeToJsonStringWhenCorrectObject() {
         SlackNotification slackNotification = new SlackNotification();
         slackNotification.setText("hej");
-        String response = JsonUtil.getJsonFromObject(slackNotification);
+        String response = JsonUtil.getJsonFromObject(slackNotification, false);
         assertThat(response).isEqualTo("{\"text\":\"hej\"}");
     }
 
@@ -30,7 +30,7 @@ public class JsonUtilTest {
     @Test
     public void returnEmptyStringWhenSerializationError() {
         NoSerializableClass noSerializableClass = new NoSerializableClass("test");
-        String response = JsonUtil.getJsonFromObject(noSerializableClass);
+        String response = JsonUtil.getJsonFromObject(noSerializableClass, false);
         assertThat(response).isEqualTo("");
     }
 

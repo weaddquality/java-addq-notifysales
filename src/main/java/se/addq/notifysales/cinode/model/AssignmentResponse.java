@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Assignment {
+public class AssignmentResponse {
 
     private int companyId;
     private int customerId;
@@ -90,7 +90,7 @@ public class Assignment {
 
     @Override
     public String toString() {
-        return "Assignment{" +
+        return "AssignmentResponse{" +
                 "companyId=" + companyId +
                 ", customerId=" + customerId +
                 ", projectId=" + projectId +

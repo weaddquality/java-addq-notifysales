@@ -1,10 +1,10 @@
 # Notifysales App
-App for notfication to allocation responsible when assignment is about to end.
-Scheduler set to poll for assignments ending within a configurable number of weeks
+App for notfication to allocation responsible when assignmentResponse is about to end.
+Scheduler set to poll for assignmentResponses ending within a configurable number of weeks
 and posting to a slack channel. Now set to check for ending within 8 weeks.
 >Polling and post interval is also configurable in code.
 >The person responsible for allocation per team has to be configured in service.
->Notified ending assignments and data not complete is stored in a SQL DB.
+>Notified ending assignmentResponses and data not complete is stored in a SQL DB.
 
 ### Slack setup
 Slack integration is done by adding the web hook URL for the Slack application 

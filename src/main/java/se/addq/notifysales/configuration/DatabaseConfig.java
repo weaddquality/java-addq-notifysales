@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import se.addq.notifysales.notification.MissingDataHandler;
-import se.addq.notifysales.notification.NotificationHandler;
+import se.addq.notifysales.notification.repository.MissingDataRepository;
 import se.addq.notifysales.notification.repository.MissingNotificationDataJpaRepository;
 import se.addq.notifysales.notification.repository.NotificationDataJpaRepository;
+import se.addq.notifysales.notification.repository.NotificationRepository;
 
 import javax.annotation.PreDestroy;
 
@@ -24,14 +24,14 @@ class DatabaseConfig {
     private HikariDataSource hikariDataSource;
 
 
-    @Bean(name = "notificationHandler")
-    NotificationHandler notificationHandlerInit(NotificationDataJpaRepository notificationDataJpaRepository) {
-        return new NotificationHandler(notificationDataJpaRepository);
+    @Bean(name = "notificationRepository")
+    NotificationRepository notificationHandlerInit(NotificationDataJpaRepository notificationDataJpaRepository) {
+        return new NotificationRepository(notificationDataJpaRepository);
     }
 
-    @Bean(name = "missingDataHandler")
-    MissingDataHandler missingDataHandlerInit(MissingNotificationDataJpaRepository missingNotificationDataJpaRepository) {
-        return new MissingDataHandler(missingNotificationDataJpaRepository);
+    @Bean(name = "missingDataRepository")
+    MissingDataRepository missingDataHandlerInit(MissingNotificationDataJpaRepository missingNotificationDataJpaRepository) {
+        return new MissingDataRepository(missingNotificationDataJpaRepository);
     }
 
     @Bean

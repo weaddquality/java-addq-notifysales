@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 import se.addq.notifysales.cinode.CinodeApi;
 import se.addq.notifysales.cinode.model.Team;
 import se.addq.notifysales.notification.model.AllocationResponsible;
+import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.utils.CsvFileHandler;
+import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -23,20 +25,23 @@ class AllocationResponsibleHandler {
 
     private final CinodeApi cinodeApi;
 
+
+    private MissingDataHandler missingDataHandler;
+
+
     private static final String ALLOCATION_RESPONSIBLE_SOURCE_FILE_PATH = "allocation_responsible_default.csv";
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
-    AllocationResponsibleHandler(CsvFileHandler csvFileHandler, CinodeApi cinodeApi) {
+    AllocationResponsibleHandler(CsvFileHandler csvFileHandler, MissingDataHandler missingDataHandler, CinodeApi cinodeApi) {
         this.csvFileHandler = csvFileHandler;
         this.allocationResponsibleList = getAllocationResponsibleResourceAsList();
         this.cinodeApi = cinodeApi;
+        this.missingDataHandler = missingDataHandler;
     }
 
-    public List<Team> getTeamsForUser(int userId) {
-        return cinodeApi.getTeamsForUser(userId);
-    }
+
 
     AllocationResponsible getAllocationResponsibleForTeam(Team team) {
         for (AllocationResponsible allocationResponsible : allocationResponsibleList) {
@@ -84,6 +89,32 @@ class AllocationResponsibleHandler {
             allocationResponsibleList.add(csvRecordData);
         }
         return allocationResponsibleList;
+    }
+
+
+    List<NotificationData> setAllocationResponsible(List<NotificationData> notificationDataList) {
+        for (NotificationData notificationData : notificationDataList) {
+            List<Team> teams = cinodeApi.getTeamsForUser(notificationData.getAssignmentConsultant().getUserId());
+            if (teams.isEmpty()) {
+                log.warn("Missing team for user {} in Cinode for {} will remove from list to notify", notificationData.getAssignmentConsultant().getFirstName() + notificationData.getAssignmentConsultant().getLastName(), notificationData);
+                missingDataHandler.addTeamIsMissingForUser(notificationData);
+                continue;
+            }
+            notificationData.getAssignmentConsultant().setTeamName(teams.get(0).getName());
+            notificationData.getAssignmentConsultant().setTeamId(teams.get(0).getId());
+
+            SleepUtil.sleepMilliSeconds(500);
+            AllocationResponsible allocationResponsible = getAllocationResponsibleForTeam(teams.get(0));
+            if (allocationResponsible.getName() == null || allocationResponsible.getName().equals("")) {
+                log.warn("Missing configuration for team {}, will remove from notification list", teams.get(0).getName());
+                missingDataHandler.addAllocationResponsibleIsMissingForTeam(notificationData, teams.get(0).getName());
+                continue;
+            }
+            notificationData.setAllocationResponsible(allocationResponsible);
+            notificationData.setReadyToBeNotified(true);
+            missingDataHandler.removeFromMissingDataIfExisting(notificationData.getAssignmentId());
+        }
+        return notificationDataList;
     }
 
 

@@ -54,6 +54,7 @@ public class CinodeImpl implements CinodeApi {
         if (isTokenRefreshNeeded()) {
             ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.exchange(baseUrl + "/token", HttpMethod.GET, entity, TokenResponse.class);
             tokenResponse = tokenResponseResponseEntity.getBody();
+            dateTimeTokenReceived = LocalDateTime.now();
             log.info("Token was re-newed");
         }
         return tokenResponse;
