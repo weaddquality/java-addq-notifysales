@@ -65,7 +65,7 @@ public class NotificationMessageCreatorTest {
 
     @Test
     public void slackMessageForMissingAllocationResponsible() {
-        String expectedMessage = "Vi saknar data i konfigurationsfil:'allocation_responsible_default.csv' för allokeringsansvarig för Team:'ADDQ 2 Krav' och kan inte skicka notifiering till Slack <@U12345>";
+        String expectedMessage = "Vi saknar data för allokeringsansvarig för Team:'ADDQ 2 Krav' och kan inte skicka notifiering till Slack <@U12345>";
         MissingNotificationData missingNotificationData = new MissingNotificationData();
         missingNotificationData.setAssignmentId(11111);
         missingNotificationData.setMissingData("ADDQ 2 Krav");

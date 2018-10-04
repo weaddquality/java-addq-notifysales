@@ -1,4 +1,4 @@
-package se.addq.notifysales.notification;
+package se.addq.notifysales.notification.repository;
 
 import org.junit.After;
 import org.junit.Before;
@@ -8,13 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.addq.notifysales.notification.model.MissingNotificationData;
-import se.addq.notifysales.notification.repository.MissingNotificationDataJpaRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class MissingDataNotificationRepositoryTest {
+public class MissingNotificationDataJpaRepositoryTest {
 
     @Autowired
     private MissingNotificationDataJpaRepository missingNotificationDataJpaRepository;

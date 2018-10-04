@@ -24,22 +24,24 @@ public class NotificationHandler {
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<NotificationRepoData> notificationRepoDataList;
+    private final List<NotificationRepoData> alreadyNotifiedRepoDataList;
 
     private final NotificationRepository notificationRepository;
+
+    private final List<NotificationData> incompleteNotificationDataToBeRemoved = new ArrayList<>();
 
     private MissingDataHandler missingDataHandler;
 
     private CinodeApi cinodeApi;
 
-    private final List<NotificationData> assignmentsToNotify = Collections.synchronizedList(new ArrayList<>());
+    private final List<NotificationData> assignmentsToNotifyList = Collections.synchronizedList(new ArrayList<>());
 
     @Autowired
     public NotificationHandler(NotificationRepository notificationRepository, MissingDataHandler missingDataHandler, CinodeApi cinodeApi) {
         this.notificationRepository = notificationRepository;
         this.missingDataHandler = missingDataHandler;
         this.cinodeApi = cinodeApi;
-        this.notificationRepoDataList = getPersistedNotifiedAssignments();
+        this.alreadyNotifiedRepoDataList = getPersistedNotifiedAssignments();
     }
 
     void addAndPersistNotificationStatus(NotificationData notificationData, String message) {
@@ -49,26 +51,26 @@ public class NotificationHandler {
         notificationRepoData.setNotifiedTime(LocalDateTime.now());
         notificationRepoData.setMessage(message);
         notificationRepository.saveNotificationData(notificationRepoData);
-        notificationRepoDataList.add(notificationRepoData);
+        alreadyNotifiedRepoDataList.add(notificationRepoData);
     }
 
 
     List<NotificationRepoData> getAlreadyNotifiedAssignments() {
-        return notificationRepoDataList;
+        return alreadyNotifiedRepoDataList;
     }
 
-    List<NotificationData> getAssignmentsToNotify() {
-        return assignmentsToNotify;
+    List<NotificationData> getAssignmentsToNotifyList() {
+        return assignmentsToNotifyList;
     }
 
 
     void clearAssignmentsToNotify() {
         log.info("Will clear assignments notified");
-        assignmentsToNotify.clear();
+        assignmentsToNotifyList.clear();
     }
 
     void assignmentsToNotifyAdd(List<NotificationData> notificationDataList) {
-        assignmentsToNotify.addAll(notificationDataList);
+        assignmentsToNotifyList.addAll(notificationDataList);
     }
 
     boolean isToBeNotified(int assignmentId) {
@@ -77,13 +79,16 @@ public class NotificationHandler {
 
     List<NotificationData> addAssignmentsToNotificationList(List<AssignmentResponse> filteredEndingAssignments) {
         List<NotificationData> notificationDataList = new ArrayList<>();
+        incompleteNotificationDataToBeRemoved.clear();
         for (AssignmentResponse assignmentResponse : filteredEndingAssignments) {
             NotificationData notificationData = addBasicAssignmentDataToNotification(assignmentResponse);
-            addDetailedAssignmentDataToNotification(notificationData);
+            notificationData = addDetailedAssignmentDataToNotification(notificationData);
             notificationDataList.add(notificationData);
         }
+        notificationDataList.removeAll(incompleteNotificationDataToBeRemoved);
         return notificationDataList;
     }
+
 
     private NotificationData addBasicAssignmentDataToNotification(AssignmentResponse assignmentResponse) {
         NotificationData notificationData = new NotificationData();
@@ -108,6 +113,7 @@ public class NotificationHandler {
         } else {
             log.warn("Missing assigned for {} will remove from list to notify", notificationData);
             missingDataHandler.addMissingAssignedForAssignment(notificationData, notificationData.getAssignmentTitle());
+            incompleteNotificationDataToBeRemoved.add(notificationData);
         }
         return notificationData;
     }
@@ -118,7 +124,7 @@ public class NotificationHandler {
                 log.debug("AssignmentResponse already notified {}", assignmentId);
                 return true;
             }
-        for (NotificationData assignmentsToNotify : getAssignmentsToNotify()) {
+        for (NotificationData assignmentsToNotify : getAssignmentsToNotifyList()) {
             if (assignmentId == assignmentsToNotify.getAssignmentId()) {
                 log.debug("AssignmentResponse already to be notified {}", assignmentId);
                 return true;

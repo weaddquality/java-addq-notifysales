@@ -24,7 +24,6 @@ public class MissingDataRepository {
         missingNotificationDataJpaRepository.save(missingNotificationData);
     }
 
-
     public List<MissingNotificationData> findAllNotificationData() {
         log.info("Get saved notification data from storage");
         List<MissingNotificationData> notificationDataList = new ArrayList<>();

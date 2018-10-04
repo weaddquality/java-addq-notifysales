@@ -1,4 +1,4 @@
-package se.addq.notifysales.notification;
+package se.addq.notifysales.notification.repository;
 
 import org.junit.After;
 import org.junit.Before;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import se.addq.notifysales.notification.model.NotificationRepoData;
-import se.addq.notifysales.notification.repository.NotificationDataJpaRepository;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class NotificationRepositoryTest {
+public class NotificationDataJpaRepositoryTest {
 
     @Autowired
     private NotificationDataJpaRepository notificationDataJpaRepository;

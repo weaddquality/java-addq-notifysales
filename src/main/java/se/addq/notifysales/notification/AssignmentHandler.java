@@ -38,9 +38,6 @@ class AssignmentHandler {
 
     private final CinodeApi cinodeApi;
 
-    void setNumberOfProjectsToFetch(int numberOfProjectsToFetch) {
-        this.numberOfProjectsToFetch = numberOfProjectsToFetch;
-    }
 
     @Autowired
     AssignmentHandler(CinodeApi cinodeApi) {
@@ -48,9 +45,23 @@ class AssignmentHandler {
     }
 
 
+    List<AssignmentResponse> getEndingAssignments() {
+        List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
+        List<Integer> projectsResponseList = getProjectSublistToCheckForAssignments();
+        for (Integer projectId : projectsResponseList) {
+            ProjectResponse projectResponse = getProject(projectId);
+            if (projectResponse == null) {
+                log.warn("Got empty response for projectId {}", projectId);
+                continue;
+            }
+            SleepUtil.sleepMilliSeconds(500);
+            List<AssignmentResponse> notificationDataListForProject = addAssignmentsToNotificationList(projectResponse.getAssignmentResponses());
+            assignmentResponseList.addAll(notificationDataListForProject);
+        }
+        return assignmentResponseList;
+    }
 
-
-    List<Integer> getProjectSublistToCheckForAssignments() {
+    private List<Integer> getProjectSublistToCheckForAssignments() {
         if (fetchProjects) {
             List<ProjectList> projectListList = cinodeApi.getProjects();
             fetchProjects = false;
@@ -70,17 +81,6 @@ class AssignmentHandler {
         return subList;
     }
 
-    List<AssignmentResponse> getEndingAssignments() {
-        List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
-        List<Integer> projectsResponseList = getProjectSublistToCheckForAssignments();
-        for (Integer projectId : projectsResponseList) {
-            ProjectResponse projectResponse = getProject(projectId);
-            SleepUtil.sleepMilliSeconds(500);
-            List<AssignmentResponse> notificationDataListForProject = addAssignmentsToNotificationList(projectResponse.getAssignmentResponses());
-            assignmentResponseList.addAll(notificationDataListForProject);
-        }
-        return assignmentResponseList;
-    }
 
     private ProjectResponse getProject(int projectId) {
         return cinodeApi.getProject(projectId);
@@ -116,7 +116,8 @@ class AssignmentHandler {
     }
 
     private boolean isAssignmentToBeNotifiedBasedOnEndDate(AssignmentResponse assignmentResponse) {
-        return assignmentResponse.getEndDate().isBefore(LocalDateTime.now().plusWeeks(weeksBeforeAssignmentEndsToNotify)) && assignmentResponse.getEndDate().isAfter(LocalDateTime.now().minusWeeks(weeksAfterAssignmentEndsToNotify));
+        return assignmentResponse.getEndDate().isBefore(LocalDateTime.now().plusWeeks(weeksBeforeAssignmentEndsToNotify))
+                && assignmentResponse.getEndDate().isAfter(LocalDateTime.now().minusWeeks(weeksAfterAssignmentEndsToNotify));
     }
 
 

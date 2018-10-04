@@ -31,7 +31,7 @@ public class NotificationPushTaskTest {
         notificationData.setReadyToBeNotified(true);
         List<NotificationData> notificationDataList = new ArrayList<>();
         notificationDataList.add(notificationData);
-        Mockito.when(notificationHandler.getAssignmentsToNotify()).thenReturn(notificationDataList);
+        Mockito.when(notificationHandler.getAssignmentsToNotifyList()).thenReturn(notificationDataList);
         Mockito.when(slackApi.sendNotification(Mockito.any())).thenReturn(true);
 
         NotificationPushTask notificationPushTask = new NotificationPushTask(slackApi, notificationHandler);
@@ -48,7 +48,7 @@ public class NotificationPushTaskTest {
         notificationData.setReadyToBeNotified(false);
         List<NotificationData> notificationDataList = new ArrayList<>();
         notificationDataList.add(notificationData);
-        Mockito.when(notificationHandler.getAssignmentsToNotify()).thenReturn(notificationDataList);
+        Mockito.when(notificationHandler.getAssignmentsToNotifyList()).thenReturn(notificationDataList);
 
         NotificationPushTask notificationPushTask = new NotificationPushTask(slackApi, notificationHandler);
         notificationPushTask.notifyAboutAssignmentsEnding();

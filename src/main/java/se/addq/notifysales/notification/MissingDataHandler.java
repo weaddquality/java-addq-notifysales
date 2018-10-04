@@ -18,18 +18,18 @@ public class MissingDataHandler {
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<MissingNotificationData> missingNotificationDataList;
+    private final List<MissingNotificationData> missingDataNotifyList;
 
     private final MissingDataRepository missingDataRepository;
 
     @Autowired
     public MissingDataHandler(MissingDataRepository missingDataRepository) {
         this.missingDataRepository = missingDataRepository;
-        this.missingNotificationDataList = getPersistedMissingNotificationData();
+        this.missingDataNotifyList = getPersistedMissingNotificationData();
     }
 
     boolean isIncompleteDataForNotification(int assignmentId) {
-        for (MissingNotificationData missingNotificationData : getMissingNotificationDataList()) {
+        for (MissingNotificationData missingNotificationData : getMissingDataNotifyList()) {
             if (assignmentId == missingNotificationData.getAssignmentId()) {
                 log.debug("AssignmentResponse has not complete data {}", assignmentId);
                 return true;
@@ -44,7 +44,7 @@ public class MissingDataHandler {
         missingNotificationData.setAssignmentId(notificationData.getAssignmentId());
         missingNotificationData.setMissingdataType(MissingDataType.MISSING_TEAM_FOR_USER);
         missingNotificationData.setMissingData(notificationData.getAssignmentConsultant().toString());
-        missingNotificationDataList.add(missingNotificationData);
+        missingDataNotifyList.add(missingNotificationData);
     }
 
     void addAllocationResponsibleIsMissingForTeam(NotificationData notificationData, String teamName) {
@@ -52,7 +52,7 @@ public class MissingDataHandler {
         missingNotificationData.setAssignmentId(notificationData.getAssignmentId());
         missingNotificationData.setMissingdataType(MissingDataType.MISSING_ALLOCATION_RESPONSIBLE);
         missingNotificationData.setMissingData(teamName);
-        missingNotificationDataList.add(missingNotificationData);
+        missingDataNotifyList.add(missingNotificationData);
     }
 
     void addMissingAssignedForAssignment(NotificationData notificationData, String reason) {
@@ -60,20 +60,20 @@ public class MissingDataHandler {
         missingNotificationData.setAssignmentId(notificationData.getAssignmentId());
         missingNotificationData.setMissingdataType(MissingDataType.MISSING_ASSIGNED);
         missingNotificationData.setMissingData(reason);
-        missingNotificationDataList.add(missingNotificationData);
+        missingDataNotifyList.add(missingNotificationData);
     }
 
 
     void removeFromMissingDataIfExisting(int assignmentId) {
-        for (MissingNotificationData missingNotificationData : missingNotificationDataList) {
+        for (MissingNotificationData missingNotificationData : missingDataNotifyList) {
             if (missingNotificationData.getAssignmentId() == assignmentId) {
                 removeMissingNotificationDataFromDb(assignmentId);
             }
         }
     }
 
-    List<MissingNotificationData> getMissingNotificationDataList() {
-        return missingNotificationDataList;
+    List<MissingNotificationData> getMissingDataNotifyList() {
+        return missingDataNotifyList;
     }
 
     void persistMissingDataNotifications(MissingNotificationData missingNotificationData) {
@@ -97,9 +97,9 @@ public class MissingDataHandler {
     }
 
 
-    void clearAssignmentsToNotify() {
+    void clearMissingDataNotifyList() {
         log.info("Will clear missing data assignments notified");
-        missingNotificationDataList.clear();
+        missingDataNotifyList.clear();
     }
 
 

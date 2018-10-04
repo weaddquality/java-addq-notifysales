@@ -34,12 +34,12 @@ public class MissingDataPushTaskTest {
         missingNotificationData.setNotified(false);
         List<MissingNotificationData> missingNotificationDataList = new ArrayList<>();
         missingNotificationDataList.add(missingNotificationData);
-        Mockito.when(missingDataHandler.getMissingNotificationDataList()).thenReturn(missingNotificationDataList);
+        Mockito.when(missingDataHandler.getMissingDataNotifyList()).thenReturn(missingNotificationDataList);
 
         MissingDataPushTask notificationPushTask = new MissingDataPushTask(slackApi, missingDataHandler);
         notificationPushTask.notifyAboutAssignmentsWithMissingData();
         verify(missingDataHandler, times(1)).persistMissingDataNotifications(Mockito.any());
-        verify(missingDataHandler, times(1)).clearAssignmentsToNotify();
+        verify(missingDataHandler, times(1)).clearMissingDataNotifyList();
     }
 
     @Test
@@ -51,12 +51,12 @@ public class MissingDataPushTaskTest {
         missingNotificationData.setNotified(true);
         List<MissingNotificationData> missingNotificationDataList = new ArrayList<>();
         missingNotificationDataList.add(missingNotificationData);
-        Mockito.when(missingDataHandler.getMissingNotificationDataList()).thenReturn(missingNotificationDataList);
+        Mockito.when(missingDataHandler.getMissingDataNotifyList()).thenReturn(missingNotificationDataList);
 
         MissingDataPushTask notificationPushTask = new MissingDataPushTask(slackApi, missingDataHandler);
         notificationPushTask.notifyAboutAssignmentsWithMissingData();
         verify(missingDataHandler, times(0)).persistMissingDataNotifications(Mockito.any());
-        verify(missingDataHandler, times(1)).clearAssignmentsToNotify();
+        verify(missingDataHandler, times(1)).clearMissingDataNotifyList();
     }
 
 }

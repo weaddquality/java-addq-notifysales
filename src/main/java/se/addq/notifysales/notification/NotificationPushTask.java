@@ -35,7 +35,7 @@ class NotificationPushTask {
     @Scheduled(fixedRate = POLLING_INTERVAL_MS, initialDelay = POLLING_INTERVAL_DELAY_MS)
     void notifyAboutAssignmentsEnding() {
         log.info("Notify slack about assignments ending -> interval {} seconds", POLLING_INTERVAL_MS / 1000);
-        final List<NotificationData> assignmentsToNotify = notificationHandler.getAssignmentsToNotify();
+        final List<NotificationData> assignmentsToNotify = notificationHandler.getAssignmentsToNotifyList();
         if (assignmentsToNotify.isEmpty()) {
             log.info("No new assignment to notify!");
         } else {
@@ -56,7 +56,6 @@ class NotificationPushTask {
             }
         }
     }
-
 
 
 }
