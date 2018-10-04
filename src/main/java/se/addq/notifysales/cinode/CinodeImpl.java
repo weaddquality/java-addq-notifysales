@@ -53,6 +53,10 @@ public class CinodeImpl implements CinodeApi {
         HttpEntity<String> entity = new HttpEntity<>(getBasicAuthHeaders());
         if (isTokenRefreshNeeded()) {
             ResponseEntity<TokenResponse> tokenResponseResponseEntity = restTemplate.exchange(baseUrl + "/token", HttpMethod.GET, entity, TokenResponse.class);
+            if (tokenResponseResponseEntity.getStatusCodeValue() != 200) {
+                log.error("Did not return OK response code -> {}", tokenResponseResponseEntity.getStatusCode());
+                return tokenResponse;
+            }
             tokenResponse = tokenResponseResponseEntity.getBody();
             dateTimeTokenReceived = LocalDateTime.now();
             log.info("Token was re-newed");
@@ -79,7 +83,8 @@ public class CinodeImpl implements CinodeApi {
         ResponseEntity<List<CompaniesResponse>> companiesResponse = restTemplate.exchange(getBaseUrlWithVersion() + "/companies", HttpMethod.GET, entity, new ParameterizedTypeReference<List<CompaniesResponse>>() {
         });
         log.info("Response: {}", companiesResponse);
-        if (companiesResponse == null) {
+        if (companiesResponse.getStatusCodeValue() != 200) {
+            log.error("Did not return OK response code -> {}", companiesResponse.getStatusCode());
             return new ArrayList<>();
         }
         return companiesResponse.getBody();
@@ -90,6 +95,10 @@ public class CinodeImpl implements CinodeApi {
         HttpEntity<String> entity = new HttpEntity<>(getHttpHeadersWithToken());
         ResponseEntity<List<ProjectList>> listResponseEntity = restTemplate.exchange(getBaseUrlForCompany() + "/projects", HttpMethod.GET, entity, new ParameterizedTypeReference<List<ProjectList>>() {
         });
+        if (listResponseEntity.getStatusCodeValue() != 200) {
+            log.error("Did not return OK response code -> {}", listResponseEntity.getStatusCode());
+            return new ArrayList<>();
+        }
         log.debug("Response: {}", listResponseEntity);
         return listResponseEntity.getBody();
     }
@@ -99,6 +108,10 @@ public class CinodeImpl implements CinodeApi {
         HttpEntity<String> entity = new HttpEntity<>(getHttpHeadersWithToken());
         ResponseEntity<ProjectResponse> projectResponseResponseEntity = restTemplate.exchange(getBaseUrlForCompany() + "/projects/" + id, HttpMethod.GET, entity, new ParameterizedTypeReference<ProjectResponse>() {
         });
+        if (projectResponseResponseEntity.getStatusCodeValue() != 200) {
+            log.error("Did not return OK response code -> {}", projectResponseResponseEntity.getStatusCode());
+            return new ProjectResponse();
+        }
         log.debug("Response: {}", projectResponseResponseEntity);
         return projectResponseResponseEntity.getBody();
     }
@@ -108,6 +121,10 @@ public class CinodeImpl implements CinodeApi {
         HttpEntity<String> entity = new HttpEntity<>(getHttpHeadersWithToken());
         ResponseEntity<ProjectAssignmentResponse> assignmentResponseResponseEntity = restTemplate.exchange(getBaseUrlForCompany() + "/projects/" + projectId + "/projectassignments/" + assignmentId, HttpMethod.GET, entity, new ParameterizedTypeReference<ProjectAssignmentResponse>() {
         });
+        if (assignmentResponseResponseEntity.getStatusCodeValue() != 200) {
+            log.error("Did not return OK response code -> {}", assignmentResponseResponseEntity.getStatusCode());
+            return new ProjectAssignmentResponse();
+        }
         log.debug("Response: {}", assignmentResponseResponseEntity);
         return assignmentResponseResponseEntity.getBody();
     }
@@ -117,6 +134,10 @@ public class CinodeImpl implements CinodeApi {
         HttpEntity<String> entity = new HttpEntity<>(getHttpHeadersWithToken());
         ResponseEntity<List<Team>> listResponseEntity = restTemplate.exchange(getBaseUrlForCompany() + "/users/" + userId + "/teams/", HttpMethod.GET, entity, new ParameterizedTypeReference<List<Team>>() {
         });
+        if (listResponseEntity.getStatusCodeValue() != 200) {
+            log.error("Did not return OK response code -> {}", listResponseEntity.getStatusCode());
+            return new ArrayList<>();
+        }
         log.debug("Response: {}", listResponseEntity);
         return listResponseEntity.getBody();
     }
@@ -126,6 +147,10 @@ public class CinodeImpl implements CinodeApi {
         HttpEntity<String> entity = new HttpEntity<>(getHttpHeadersWithToken());
         ResponseEntity<List<Team>> listResponseEntity = restTemplate.exchange(getBaseUrlForCompany() + "/teams/", HttpMethod.GET, entity, new ParameterizedTypeReference<List<Team>>() {
         });
+        if (listResponseEntity.getStatusCodeValue() != 200) {
+            log.error("Did not return OK response code -> {}", listResponseEntity.getStatusCode());
+            return new ArrayList<>();
+        }
         log.debug("Response: {}", listResponseEntity);
         return listResponseEntity.getBody();
     }

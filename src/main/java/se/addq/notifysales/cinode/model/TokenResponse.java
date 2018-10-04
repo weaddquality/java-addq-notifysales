@@ -32,25 +32,11 @@ public class TokenResponse {
         this.refreshToken = refreshToken;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TokenResponse that = (TokenResponse) o;
-        return Objects.equals(accessToken, that.accessToken) &&
-                Objects.equals(refreshToken, that.refreshToken);
-    }
 
     @Override
     public int hashCode() {
         return Objects.hash(accessToken, refreshToken);
     }
 
-    @Override
-    public String toString() {
-        return "TokenResponse{" +
-                "accessToken='" + accessToken + '\'' +
-                ", refreshToken='" + refreshToken + '\'' +
-                '}';
-    }
+
 }

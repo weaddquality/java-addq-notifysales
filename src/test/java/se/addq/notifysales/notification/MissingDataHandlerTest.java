@@ -37,6 +37,7 @@ public class MissingDataHandlerTest {
     private List<MissingNotificationData> getMissingNotificationTestDataList() {
         List<MissingNotificationData> missingNotificationDataList = new ArrayList<>();
         MissingNotificationData missingNotificationData = new MissingNotificationData();
+        missingNotificationData.setId(10L);
         missingNotificationData.setAssignmentId(ASSIGNMENT_ID_IN_MISSING_DATA);
         missingNotificationDataList.add(missingNotificationData);
         return missingNotificationDataList;

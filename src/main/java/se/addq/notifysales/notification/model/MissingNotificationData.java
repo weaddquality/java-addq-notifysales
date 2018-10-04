@@ -58,16 +58,5 @@ public class MissingNotificationData {
         this.missingData = missingData;
     }
 
-    @Override
-    public String toString() {
-        return "MissingNotificationData{" +
-                "id=" + id +
-                ", isNotified=" + isNotified +
-                ", assignmentId=" + assignmentId +
-                ", MissingdataType=" + MissingdataType +
-                ", missingData='" + missingData + '\'' +
-                '}';
-    }
-
 
 }

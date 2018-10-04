@@ -1,9 +1,5 @@
 package se.addq.notifysales.notification;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import se.addq.notifysales.cinode.CinodeApi;
-import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.slack.SlackApi;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,6 +39,8 @@ public class NotificationControllerTest {
                 .andExpect(content().string("Notify Service is up an running!"));
     }
 
+    //TODO:Re-add this when when API is secured
+    /*
     @Test
     public void requestNotifiedListReturnsHttpOKAndCorrectJsonInResponse() throws Exception {
         List<NotificationData> notificationDataList = new ArrayList<>();
@@ -67,6 +59,7 @@ public class NotificationControllerTest {
                 .andExpect(content().string(assignmentsAsJsonExpectedResult));
     }
 
+
     private <T> String getListOfItemsAsJson(List<T> listOfItems) throws JsonProcessingException {
         return new ObjectMapper()
                 .configure(SerializationFeature.INDENT_OUTPUT, true)
@@ -74,6 +67,8 @@ public class NotificationControllerTest {
                 .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
                 .writeValueAsString(listOfItems);
     }
+
+     */
 
 
 }

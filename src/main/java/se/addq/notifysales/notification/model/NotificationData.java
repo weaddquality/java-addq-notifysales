@@ -32,10 +32,6 @@ public class NotificationData {
         isReadyToBeNotified = readyToBeNotified;
     }
 
-    public int getProjectId() {
-        return projectId;
-    }
-
     public void setProjectId(int projectId) {
         this.projectId = projectId;
     }
@@ -46,10 +42,6 @@ public class NotificationData {
 
     public void setAssignmentId(int assignmentId) {
         this.assignmentId = assignmentId;
-    }
-
-    public LocalDateTime getStartDate() {
-        return startDate;
     }
 
     public void setStartDate(LocalDateTime startDate) {

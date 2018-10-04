@@ -36,16 +36,8 @@ public class AssignmentConsultant {
         this.lastName = lastName;
     }
 
-    public String getTeamName() {
-        return teamName;
-    }
-
     public void setTeamName(String teamName) {
         this.teamName = teamName;
-    }
-
-    public int getTeamId() {
-        return teamId;
     }
 
     public void setTeamId(int teamId) {

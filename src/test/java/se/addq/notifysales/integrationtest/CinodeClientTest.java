@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestTemplate;
 import se.addq.notifysales.Application;
 import se.addq.notifysales.cinode.CinodeImpl;
@@ -29,6 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.client.ExpectedCount.manyTimes;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 
@@ -100,6 +102,28 @@ public class CinodeClientTest {
         ProjectResponse projectResponse = this.cinodeImpl.getProject(1);
         mockServer.verify();
         assertThat(projectResponse.getAssignmentResponses().size()).isOne();
+        mockServer.reset();
+    }
+
+    @Test()
+    public void getProjectShouldReturnNotNullWhenHttpResponseIsServerError() {
+        mockServer.expect(manyTimes(), requestTo("https://dummy/v0.1/companies/109/projects/1")).andExpect(method(HttpMethod.GET))
+                .andRespond(withServerError());
+
+        ProjectResponse projectResponse = this.cinodeImpl.getProject(1);
+        mockServer.verify();
+        assertThat(projectResponse).isNotNull();
+        mockServer.reset();
+    }
+
+    @Test()
+    public void getProjectShouldReturnNotNullWhenHttpResponseIsClientError() {
+        mockServer.expect(manyTimes(), requestTo("https://dummy/v0.1/companies/109/projects/1")).andExpect(method(HttpMethod.GET))
+                .andRespond(MockRestResponseCreators.withBadRequest());
+
+        ProjectResponse projectResponse = this.cinodeImpl.getProject(1);
+        mockServer.verify();
+        assertThat(projectResponse).isNotNull();
         mockServer.reset();
     }
 

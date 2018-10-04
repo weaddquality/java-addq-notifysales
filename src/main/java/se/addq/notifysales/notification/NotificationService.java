@@ -41,7 +41,7 @@ class NotificationService implements NotificationServiceApi {
     }
 
     @Override
-    public byte[] getAllocationConfiguration() {
+    public byte[] getAllocationResponsibleConfiguration() {
         return allocationResponsibleHandler.getAllocationResponsibleListAsByteArray();
     }
 

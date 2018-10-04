@@ -6,12 +6,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
+import se.addq.notifysales.cinode.model.AssignmentResponse;
 import se.addq.notifysales.notification.model.NotificationRepoData;
 
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 public class NotificationServiceApiTest {
@@ -35,8 +40,35 @@ public class NotificationServiceApiTest {
     }
 
     @Test
-    public void updateAssignmentsToNotify() {
+    public void updateAssignmentsToNotifyIsToBeNotifiedIsTrue() {
+        Mockito.when(assignmentHandler.getEndingAssignments()).thenReturn(getListOfAssignmentResponse());
+        Mockito.when(notificationHandler.isToBeNotified(Mockito.anyInt())).thenReturn(true);
         notificationServiceApi.updateAssignmentsToNotify();
+        verify(notificationHandler, times(1)).addAssignmentsToNotificationList(Mockito.any());
+        verify(allocationResponsibleHandler, times(1)).setAllocationResponsible(Mockito.any());
+        verify(notificationHandler, times(1)).assignmentsToNotifyAdd(Mockito.any());
+    }
+
+    @Test
+    public void updateAssignmentsToNotifyIsToBeNotifiedIsFalse() {
+        Mockito.when(assignmentHandler.getEndingAssignments()).thenReturn(getListOfAssignmentResponse());
+        Mockito.when(notificationHandler.isToBeNotified(Mockito.anyInt())).thenReturn(false);
+        notificationServiceApi.updateAssignmentsToNotify();
+        verify(notificationHandler, times(1)).addAssignmentsToNotificationList(Mockito.any());
+        verify(allocationResponsibleHandler, times(1)).setAllocationResponsible(Mockito.any());
+        verify(notificationHandler, times(1)).assignmentsToNotifyAdd(Mockito.any());
+    }
+
+    private List<AssignmentResponse> getListOfAssignmentResponse() {
+        List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
+        AssignmentResponse assignmentResponse = new AssignmentResponse();
+        assignmentResponse.setEndDate(LocalDateTime.now().toString());
+        assignmentResponse.setId(123);
+        assignmentResponse.setDescription("The thing");
+        assignmentResponse.setCustomerId(12);
+        assignmentResponse.setCompanyId(109);
+        assignmentResponseList.add(assignmentResponse);
+        return assignmentResponseList;
     }
 
     @Test
@@ -55,6 +87,16 @@ public class NotificationServiceApiTest {
                 "  \"assignmentId\" : 1," + System.lineSeparator() +
                 "  \"message\" : \"Hej\"" + System.lineSeparator() +
                 "} ]");
+    }
+
+    @Test
+    public void getAllocationConfiguration() {
+        String testString = "NAME,TEAM_NAME,TEAM_ID,SLACK_USER_ID,SLACK_CHANNEL\n" +
+                "Nisse,Super Team,1,U12345,The test channel\n";
+        byte bytes[] = testString.getBytes();
+        Mockito.when(allocationResponsibleHandler.getAllocationResponsibleListAsByteArray()).thenReturn(bytes);
+        byte[] allocationConfiguration = notificationServiceApi.getAllocationResponsibleConfiguration();
+        assertThat(new String(allocationConfiguration, StandardCharsets.UTF_8)).isEqualTo(testString);
     }
 
 }

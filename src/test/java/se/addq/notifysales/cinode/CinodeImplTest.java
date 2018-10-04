@@ -55,6 +55,7 @@ public class CinodeImplTest {
         assertThat(refreshToken).isEqualTo("refresh");
     }
 
+
     @Test
     public void getProjectsShallReturnListOfProjects() {
         List<ProjectList> projectListList = new ArrayList<>();
@@ -65,21 +66,27 @@ public class CinodeImplTest {
     }
 
     @Test
-    public void getCompaniesShallReturnListOfCompanies() {
-        List<CompaniesResponse> companiesResponses = new ArrayList<>();
-        CompaniesResponse companiesResponse = new CompaniesResponse();
-        LinksResponse linksResponse = new LinksResponse();
-        linksResponse.setHref("http://dummy");
-        linksResponse.setRel("self");
-        List<LinksResponse> linksResponses = new ArrayList<>();
-        linksResponses.add(linksResponse);
-        companiesResponse.setLinks(linksResponses);
-        companiesResponses.add(companiesResponse);
-        setMockitoGetCompaniesResponse(companiesResponses);
+    public void getProjectsShallReturnEmptyListIfResponseIsNotOk() {
+        List<ProjectList> projectListList = new ArrayList<>();
+        projectListList.add(new ProjectList(1));
+        setMockitoGetProjectsResponse(projectListList);
+        List<ProjectList> projectsRespons = cinodeApi.getProjects();
+        assertThat(projectsRespons.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void getCompaniesShouldReturnListOfCompaniesIfResponseIsOk() {
+        setMockitoGetCompaniesResponse();
         List<CompaniesResponse> companiesResponseList = cinodeApi.getCompanies();
         assertThat(companiesResponseList.size()).isEqualTo(1);
     }
 
+    @Test
+    public void getCompaniesShouldReturnEmptyListIfHttpResponseIsNotOK() {
+        setMockitoGetCompaniesResponse(HttpStatus.INTERNAL_SERVER_ERROR);
+        List<CompaniesResponse> companiesResponseList = cinodeApi.getCompanies();
+        assertThat(companiesResponseList).isEmpty();
+    }
 
     @Test
     public void getTeamsForCompanyShallReturnListOfTeams() {
@@ -88,6 +95,13 @@ public class CinodeImplTest {
         setMockitoGetTeamsForCompanyResponse(teamListResponse);
         List<Team> teamList = cinodeApi.getTeamsForCompany();
         assertThat(teamList.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldGetEmptyListWhenGetTeamsForCompanyReturnsServerError() {
+        setMockitoGetTeamsForCompanyResponseReturnServerError();
+        List<Team> teamList = cinodeApi.getTeamsForCompany();
+        assertThat(teamList).isEmpty();
     }
 
 
@@ -130,6 +144,10 @@ public class CinodeImplTest {
         Assigned assigned = new Assigned();
         assigned.setFirstName("Nisse");
         assigned.setLastName("Hult");
+        assigned.setUserId("nisse-hult");
+        assigned.setCompanyId(109);
+        assigned.setCompanyUserType(32);
+        assigned.setSeoId("nisse-UK");
         response.setAssigned(assigned);
         setMockitoProjectAssignmentResponse(response);
         ProjectAssignmentResponse projectAssignmentResponse = cinodeApi.getProjectAssignment(1, 1);
@@ -193,8 +211,9 @@ public class CinodeImplTest {
         }
     }
 
-    private void setMockitoGetCompaniesResponse(List<CompaniesResponse> companiesResponses) {
-        ResponseEntity<List<CompaniesResponse>> listResponseEntity = new ResponseEntity<>(companiesResponses, HttpStatus.OK);
+
+    private void setMockitoGetCompaniesResponse(HttpStatus httpStatus) {
+        ResponseEntity<List<CompaniesResponse>> listResponseEntity = new ResponseEntity<>(httpStatus);
         Mockito.when(restTemplateMock.exchange(
                 Mockito.eq(ReflectionTestUtils.getField(cinodeApi, "baseUrl") + "/v0.1" + "/companies"),
                 Mockito.eq(HttpMethod.GET),
@@ -203,15 +222,32 @@ public class CinodeImplTest {
 
     }
 
+    private void setMockitoGetCompaniesResponse() {
+        ResponseEntity<List<CompaniesResponse>> listResponseEntity = new ResponseEntity<>(getListOfCompanies(), HttpStatus.OK);
+        Mockito.when(restTemplateMock.exchange(
+                Mockito.eq(ReflectionTestUtils.getField(cinodeApi, "baseUrl") + "/v0.1" + "/companies"),
+                Mockito.eq(HttpMethod.GET),
+                Mockito.any(HttpEntity.class),
+                ArgumentMatchers.<ParameterizedTypeReference<List<CompaniesResponse>>>any())).thenReturn(listResponseEntity);
+
+    }
+
+    private void setMockitoGetTeamsForCompanyResponseReturnServerError() {
+        ResponseEntity<List<Team>> listResponseEntity = new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        setMockitoResponseForGetTeamsForCompany(listResponseEntity);
+    }
+
     private void setMockitoGetTeamsForCompanyResponse(List<Team> teamListResponse) {
         ResponseEntity<List<Team>> listResponseEntity = new ResponseEntity<>(teamListResponse, HttpStatus.OK);
+        setMockitoResponseForGetTeamsForCompany(listResponseEntity);
+    }
+
+    private void setMockitoResponseForGetTeamsForCompany(ResponseEntity<List<Team>> listResponseEntity) {
         Mockito.when(restTemplateMock.exchange(
                 Mockito.eq(cinodeApi.getBaseUrlForCompany() + "/teams/"),
                 Mockito.eq(HttpMethod.GET),
                 Mockito.any(HttpEntity.class),
                 ArgumentMatchers.<ParameterizedTypeReference<List<Team>>>any())).thenReturn(listResponseEntity);
-
-
     }
 
 
@@ -224,5 +260,23 @@ public class CinodeImplTest {
                 ArgumentMatchers.<ParameterizedTypeReference<List<Team>>>any())).thenReturn(listResponseEntity);
 
     }
+
+    private List<CompaniesResponse> getListOfCompanies() {
+        List<CompaniesResponse> companiesResponses = new ArrayList<>();
+        CompaniesResponse companiesResponse = new CompaniesResponse();
+        LinksResponse linksResponse = new LinksResponse();
+        linksResponse.setHref("http://dummy");
+        linksResponse.setRel("self");
+        List<String> methods = new ArrayList<>();
+        methods.add("GET");
+        methods.add("POST");
+        linksResponse.setMethods(methods);
+        List<LinksResponse> linksResponses = new ArrayList<>();
+        linksResponses.add(linksResponse);
+        companiesResponse.setLinks(linksResponses);
+        companiesResponses.add(companiesResponse);
+        return companiesResponses;
+    }
+
 
 }

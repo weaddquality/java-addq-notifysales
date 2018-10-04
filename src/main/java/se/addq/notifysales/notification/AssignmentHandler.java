@@ -64,6 +64,10 @@ class AssignmentHandler {
     private List<Integer> getProjectSublistToCheckForAssignments() {
         if (fetchProjects) {
             List<ProjectList> projectListList = cinodeApi.getProjects();
+            if (projectListList == null) {
+                log.error("No projects returned!");
+                return new ArrayList<>();
+            }
             fetchProjects = false;
             projectListList.sort(Collections.reverseOrder(Comparator.comparing(ProjectList::getId)));
             for (ProjectList projectResponse : projectListList) {

@@ -51,13 +51,5 @@ public class NotificationRepoData {
         this.message = message;
     }
 
-    @Override
-    public String toString() {
-        return "NotificationRepoData{" +
-                "id=" + id +
-                ", notifiedTime=" + notifiedTime +
-                ", assignmentId=" + assignmentId +
-                ", message='" + message + '\'' +
-                '}';
-    }
+
 }

@@ -3,9 +3,6 @@ package se.addq.notifysales.notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,9 +32,12 @@ class NotificationController {
         return "Notify Service is up an running!";
     }
 
+
+    //TODO:Re-add this when when API is secured
+    /*
     @RequestMapping(value = "/download/allocation/config/used", method = RequestMethod.GET)
     public ResponseEntity<byte[]> downloadAllocationUsedAsCsv() {
-        byte[] csvFileByteArray = notificationService.getAllocationConfiguration();
+        byte[] csvFileByteArray = notificationService.getAllocationResponsibleConfiguration();
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + "allokeringsansvariga-per-team-mall" + ".csv" + "\"")
@@ -62,5 +62,6 @@ class NotificationController {
         }
         return "Failed to send message {} to Slack";
     }
+    */
 
 }

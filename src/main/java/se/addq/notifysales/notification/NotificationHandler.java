@@ -81,8 +81,7 @@ public class NotificationHandler {
         List<NotificationData> notificationDataList = new ArrayList<>();
         incompleteNotificationDataToBeRemoved.clear();
         for (AssignmentResponse assignmentResponse : filteredEndingAssignments) {
-            NotificationData notificationData = addBasicAssignmentDataToNotification(assignmentResponse);
-            notificationData = addDetailedAssignmentDataToNotification(notificationData);
+            NotificationData notificationData = addAssignmentDataToNotification(assignmentResponse);
             notificationDataList.add(notificationData);
         }
         notificationDataList.removeAll(incompleteNotificationDataToBeRemoved);
@@ -90,31 +89,31 @@ public class NotificationHandler {
     }
 
 
-    private NotificationData addBasicAssignmentDataToNotification(AssignmentResponse assignmentResponse) {
+    private NotificationData addAssignmentDataToNotification(AssignmentResponse assignmentResponse) {
         NotificationData notificationData = new NotificationData();
         notificationData.setAssignmentId(assignmentResponse.getId());
         notificationData.setProjectId(assignmentResponse.getProjectId());
         notificationData.setAssignmentTitle(assignmentResponse.getTitle());
         notificationData.setEndDate(assignmentResponse.getEndDate());
         notificationData.setStartDate(assignmentResponse.getStartDate());
-        return notificationData;
-    }
 
-    private NotificationData addDetailedAssignmentDataToNotification(NotificationData notificationData) {
-        log.info("Get assignment for notification data {}", notificationData);
-        ProjectAssignmentResponse projectAssignmentResponse = cinodeApi.getProjectAssignment(notificationData.getProjectId(), notificationData.getAssignmentId());
+        log.info("Get project assignment for project {} and assignment Id {}", notificationData);
+        ProjectAssignmentResponse projectAssignmentResponse = cinodeApi.getProjectAssignment(assignmentResponse.getProjectId(), assignmentResponse.getId());
+
         SleepUtil.sleepMilliSeconds(500);
-        if (projectAssignmentResponse.getAssigned() != null) {
-            notificationData.getAssignmentConsultant().setFirstName(projectAssignmentResponse.getAssigned().getFirstName());
-            notificationData.getAssignmentConsultant().setLastName(projectAssignmentResponse.getAssigned().getLastName());
-            notificationData.getAssignmentConsultant().setUserId(projectAssignmentResponse.getAssigned().getId());
-            notificationData.getAssignmentCustomer().setId(projectAssignmentResponse.getCustomer().getId());
-            notificationData.getAssignmentCustomer().setName(projectAssignmentResponse.getCustomer().getName());
-        } else {
-            log.warn("Missing assigned for {} will remove from list to notify", notificationData);
-            missingDataHandler.addMissingAssignedForAssignment(notificationData, notificationData.getAssignmentTitle());
-            incompleteNotificationDataToBeRemoved.add(notificationData);
+        if (projectAssignmentResponse != null) {
+            if (projectAssignmentResponse.getAssigned() != null) {
+                notificationData.getAssignmentConsultant().setFirstName(projectAssignmentResponse.getAssigned().getFirstName());
+                notificationData.getAssignmentConsultant().setLastName(projectAssignmentResponse.getAssigned().getLastName());
+                notificationData.getAssignmentConsultant().setUserId(projectAssignmentResponse.getAssigned().getId());
+                notificationData.getAssignmentCustomer().setId(projectAssignmentResponse.getCustomer().getId());
+                notificationData.getAssignmentCustomer().setName(projectAssignmentResponse.getCustomer().getName());
+                return notificationData;
+            }
         }
+        log.warn("Missing assigned for {} will remove from list to notify", notificationData);
+        missingDataHandler.addMissingAssignedForAssignment(notificationData, notificationData.getAssignmentTitle());
+        incompleteNotificationDataToBeRemoved.add(notificationData);
         return notificationData;
     }
 

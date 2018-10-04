@@ -47,6 +47,15 @@ public class AssignmentHandlerTest {
 
 
     @Test
+    public void shouldGetEmptyListReturnedWhenCinodeGetProjectsReturnsNull() {
+        Mockito.when(cinodeApi.getProjects()).thenReturn(null);
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();
+        assertThat(assignmentResponseList).isEmpty();
+    }
+
+
+
+    @Test
     public void shouldGetEmptyListReturnedWhenCinodeGetProjectReturnsNull() {
         Mockito.when(cinodeApi.getProject(Mockito.anyInt())).thenReturn(null);
         List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();

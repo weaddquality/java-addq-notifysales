@@ -11,6 +11,7 @@ import se.addq.notifysales.cinode.model.Assigned;
 import se.addq.notifysales.cinode.model.AssignmentResponse;
 import se.addq.notifysales.cinode.model.Customer;
 import se.addq.notifysales.cinode.model.ProjectAssignmentResponse;
+import se.addq.notifysales.notification.model.AssignmentCustomer;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.model.NotificationRepoData;
 import se.addq.notifysales.notification.repository.NotificationRepository;
@@ -75,10 +76,18 @@ public class NotificationHandlerTest {
 
 
     @Test
-    public void assignmentsAddedToNotificationListRemovedAndAddedToMissingDataIfAssignmentResponseNullAssigned() {
+    public void shouldGetAddedToMissingDataWhenAssignmentResponseAssignedIsNull() {
         ProjectAssignmentResponse projectAssignmentResponse = getProjectAssignment();
         projectAssignmentResponse.setAssigned(null);
         Mockito.when(cinodeApi.getProjectAssignment(Mockito.anyInt(), Mockito.anyInt())).thenReturn(projectAssignmentResponse);
+        List<NotificationData> list = notificationHandler.addAssignmentsToNotificationList(getAssignmentResponse());
+        assertThat(list.size()).isZero();
+        verify(missingDataHandler, times(1)).addMissingAssignedForAssignment(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    public void shouldGetAddedToMissingDataWhenAssignmentResponseIsNull() {
+        Mockito.when(cinodeApi.getProjectAssignment(Mockito.anyInt(), Mockito.anyInt())).thenReturn(null);
         List<NotificationData> list = notificationHandler.addAssignmentsToNotificationList(getAssignmentResponse());
         assertThat(list.size()).isZero();
         verify(missingDataHandler, times(1)).addMissingAssignedForAssignment(Mockito.any(), Mockito.any());
@@ -116,6 +125,10 @@ public class NotificationHandlerTest {
         List<NotificationData> notificationDataList = new ArrayList<>();
         NotificationData notificationData = new NotificationData();
         notificationData.setAssignmentId(ASSIGNMENT_ID_TO_BE_ALREADY_NOTIFIED);
+        AssignmentCustomer assignmentCustomer = new AssignmentCustomer();
+        assignmentCustomer.setName("Nisse IT");
+        assignmentCustomer.setId(12);
+        notificationData.setAssignmentCustomer(assignmentCustomer);
         notificationDataList.add(notificationData);
         return notificationDataList;
     }

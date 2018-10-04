@@ -6,8 +6,6 @@ public class AllocationResponsible implements Serializable {
 
     private String name = "";
 
-    private String email = "";
-
     private String slackChannel = "";
 
     private String slackUserId = "";
@@ -22,14 +20,6 @@ public class AllocationResponsible implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getSlackChannel() {
@@ -68,7 +58,6 @@ public class AllocationResponsible implements Serializable {
     public String toString() {
         return "AllocationResponsible{" +
                 "name='" + name + '\'' +
-                ", email='" + email + '\'' +
                 ", slackChannel='" + slackChannel + '\'' +
                 ", slackUserId='" + slackUserId + '\'' +
                 ", teamId=" + teamId +
