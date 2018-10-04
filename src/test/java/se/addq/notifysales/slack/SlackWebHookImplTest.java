@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,15 +37,13 @@ public class SlackWebHookImplTest {
 
     @Test
     public void sendNotificationAndResponseIsOk() {
-        ReflectionTestUtils.setField(slackApi, "slackWebhookUrl", "http://dummy");
-        boolean isSent = slackApi.sendNotification("Hej");
+        boolean isSent = slackApi.sendNotification("Hej", "http://dummy");
         assertThat(isSent).isTrue();
     }
 
     @Test
     public void sendNotificationAndResponseIsNotOk() {
-        ReflectionTestUtils.setField(slackApi, "slackWebhookUrl", "http://wrong");
-        boolean isSent = slackApi.sendNotification("Hej");
+        boolean isSent = slackApi.sendNotification("Hej", "http://wrong");
         assertThat(isSent).isFalse();
     }
 }

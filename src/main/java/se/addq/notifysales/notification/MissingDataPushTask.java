@@ -19,6 +19,9 @@ class MissingDataPushTask {
     @Value("${slack.notification.missingdata.slackid}")
     private String slackIdForUserToNotifyWhenDataMissing;
 
+    @Value("${slack.missing.data.webhook.url}")
+    private String slackWebhookUrl;
+
     private final SlackApi slackApi;
 
     private final MissingDataHandler missingDataHandler;
@@ -51,7 +54,7 @@ class MissingDataPushTask {
                     log.warn("Can not send / store message due to missing data! {}", missingDataForAssignments);
                     continue;
                 }
-                if (slackApi.sendNotification(message)) {
+                if (slackApi.sendNotification(message, slackWebhookUrl)) {
                     missingNotificationData.setNotified(true);
                 } else {
                     log.warn("Failed to send message to Slack. Will re-try later!");

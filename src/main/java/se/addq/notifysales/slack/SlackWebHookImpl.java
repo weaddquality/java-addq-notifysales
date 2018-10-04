@@ -3,7 +3,6 @@ package se.addq.notifysales.slack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,8 +17,6 @@ import java.lang.invoke.MethodHandles;
 public class SlackWebHookImpl implements SlackApi {
 
     private static final String OK_RESPONSE_FROM_SLACK = "ok";
-    @Value("${slack.webhook.url}")
-    private String slackWebhookUrl;
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -31,7 +28,7 @@ public class SlackWebHookImpl implements SlackApi {
     }
 
     @Override
-    public boolean sendNotification(String message) {
+    public boolean sendNotification(String message, String webHookURL) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
@@ -39,7 +36,7 @@ public class SlackWebHookImpl implements SlackApi {
         slackNotification.setText(message);
         String slackMessageJson = JsonUtil.getJsonFromObject(slackNotification, false);
         HttpEntity<Object> entity = new HttpEntity<>(slackMessageJson, headers);
-        String resp = restTemplate.postForObject(slackWebhookUrl, entity, String.class);
+        String resp = restTemplate.postForObject(webHookURL, entity, String.class);
         if (OK_RESPONSE_FROM_SLACK.equals(resp)) {
             log.info("Successfully sent notification to Slack with message {}", slackMessageJson);
             return true;

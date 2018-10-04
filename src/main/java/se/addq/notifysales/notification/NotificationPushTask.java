@@ -3,6 +3,7 @@ package se.addq.notifysales.notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import se.addq.notifysales.notification.model.NotificationData;
@@ -15,6 +16,8 @@ import java.util.List;
 @Component
 class NotificationPushTask {
 
+    @Value("${slack.notification.webhook.url}")
+    private String slackWebhookUrl;
 
     private final SlackApi slackApi;
 
@@ -45,7 +48,7 @@ class NotificationPushTask {
                         log.info("AssignmentResponse ready to notify {}", notificationData);
                         SleepUtil.sleepMilliSeconds(500);
                         String message = NotificationMessageCreator.getMessageForNotificationEndingAssignment(notificationData);
-                        if (slackApi.sendNotification(message)) {
+                        if (slackApi.sendNotification(message, slackWebhookUrl)) {
                             notificationHandler.addAndPersistNotificationStatus(notificationData, message);
                         } else {
                             log.warn("Could not send message will re-try later!");
