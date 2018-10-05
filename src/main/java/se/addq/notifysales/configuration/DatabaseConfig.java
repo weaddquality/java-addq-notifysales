@@ -9,10 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import se.addq.notifysales.notification.repository.MissingDataRepository;
-import se.addq.notifysales.notification.repository.MissingNotificationDataJpaRepository;
-import se.addq.notifysales.notification.repository.NotificationDataJpaRepository;
-import se.addq.notifysales.notification.repository.NotificationRepository;
+import se.addq.notifysales.notification.repository.*;
 
 import javax.annotation.PreDestroy;
 
@@ -25,13 +22,18 @@ class DatabaseConfig {
 
 
     @Bean(name = "notificationRepository")
-    NotificationRepository notificationHandlerInit(NotificationDataJpaRepository notificationDataJpaRepository) {
+    NotificationRepository notificationRepositoryInit(NotificationDataJpaRepository notificationDataJpaRepository) {
         return new NotificationRepository(notificationDataJpaRepository);
     }
 
     @Bean(name = "missingDataRepository")
-    MissingDataRepository missingDataHandlerInit(MissingNotificationDataJpaRepository missingNotificationDataJpaRepository) {
+    MissingDataRepository missingDataRepositoryInit(MissingNotificationDataJpaRepository missingNotificationDataJpaRepository) {
         return new MissingDataRepository(missingNotificationDataJpaRepository);
+    }
+
+    @Bean(name = "allocationResponsibleDataRepository")
+    AllocationResponsibleDataRepository allocationResponsibleDataRepositoryInit(AllocationResponsibleJpaRepository allocationResponsibleJpaRepository) {
+        return new AllocationResponsibleDataRepository(allocationResponsibleJpaRepository);
     }
 
     @Bean

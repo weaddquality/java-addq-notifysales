@@ -1,8 +1,17 @@
 package se.addq.notifysales.notification.model;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 
+@Entity
 public class AllocationResponsible implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
     private String name = "";
 
@@ -13,6 +22,14 @@ public class AllocationResponsible implements Serializable {
     private int teamId = 0;
 
     private String teamName = "";
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;
@@ -57,7 +74,8 @@ public class AllocationResponsible implements Serializable {
     @Override
     public String toString() {
         return "AllocationResponsible{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 ", slackChannel='" + slackChannel + '\'' +
                 ", slackUserId='" + slackUserId + '\'' +
                 ", teamId=" + teamId +

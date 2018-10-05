@@ -23,8 +23,9 @@ cinode.user=${CINODE_USER} set to account to run service as needs full Cinode ac
 spring.datasource.jdbc-url=${JDBC_DATABASE_URL} is set in heroku, need to be set locally
 spring.datasource.username=${JDBC_DATABASE_USERNAME} is set in heroku, need to be set locally
 spring.datasource.password=${JDBC_DATABASE_PASSWORD} is set in heroku, need to be set locally
-slack.webhook.url=${SLACK_WEBHOOK_URL} set to channel where notifications is going to be posted
-slack.notification.missingdata.slackid=${MISSING_DATA_SLACK_ID} Slack userid i.e. U12345
+slack.notification.missingdata.slackid=${MISSING_DATA_SLACK_ID} ex U12345
+slack.missing.data.webhook.url=${SLACK_MISSING_DATA_WEBHOOK_URL} info about missing data channel
+slack.notification.webhook.url=${SLACK_NOTIFICATION_WEBHOOK_URL} allocation notification channel
 ```
 
 ## run from cmd-prompt

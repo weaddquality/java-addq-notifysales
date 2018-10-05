@@ -9,6 +9,7 @@ import se.addq.notifysales.cinode.CinodeApi;
 import se.addq.notifysales.cinode.model.Team;
 import se.addq.notifysales.notification.model.AllocationResponsible;
 import se.addq.notifysales.notification.model.NotificationData;
+import se.addq.notifysales.notification.repository.AllocationResponsibleDataRepository;
 import se.addq.notifysales.utils.CsvFileHandler;
 import se.addq.notifysales.utils.SleepUtil;
 
@@ -27,6 +28,8 @@ class AllocationResponsibleHandler {
 
     private MissingDataHandler missingDataHandler;
 
+    private AllocationResponsibleDataRepository allocationResponsibleDataRepository;
+
     private static final String ALLOCATION_RESPONSIBLE_SOURCE_FILE_PATH = "allocation_responsible_default.csv";
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -34,11 +37,13 @@ class AllocationResponsibleHandler {
     private final List<NotificationData> incompleteNotificationDataToBeRemoved = new ArrayList<>();
 
     @Autowired
-    AllocationResponsibleHandler(CsvFileHandler csvFileHandler, MissingDataHandler missingDataHandler, CinodeApi cinodeApi) {
+    AllocationResponsibleHandler(CsvFileHandler csvFileHandler, MissingDataHandler missingDataHandler, CinodeApi cinodeApi, AllocationResponsibleDataRepository allocationResponsibleDataRepository) {
         this.csvFileHandler = csvFileHandler;
+        this.allocationResponsibleDataRepository = allocationResponsibleDataRepository;
         this.allocationResponsibleList = getAllocationResponsibleResourceAsList();
         this.cinodeApi = cinodeApi;
         this.missingDataHandler = missingDataHandler;
+
     }
 
 
@@ -90,11 +95,16 @@ class AllocationResponsibleHandler {
 
 
     private List<AllocationResponsible> getAllocationResponsibleResourceAsList() {
-        List<CSVRecord> csvRecordList = csvFileHandler.getListOfCSVRecords(ALLOCATION_RESPONSIBLE_SOURCE_FILE_PATH, AllocationCsvHeaders.class);
-        return mapCsvToAllocationResponsible(csvRecordList);
+        return allocationResponsibleDataRepository.findAllAllocationResponsible();
     }
 
+    /*
+        private List<AllocationResponsible> getAllocationResponsibleResourceAsList() {
+            List<CSVRecord> csvRecordList = csvFileHandler.getListOfCSVRecords(ALLOCATION_RESPONSIBLE_SOURCE_FILE_PATH, AllocationCsvHeaders.class);
+            return mapCsvToAllocationResponsible(csvRecordList);
+        }
 
+    */
     private List<AllocationResponsible> mapCsvToAllocationResponsible(List<CSVRecord> csvRecordList) {
         List<AllocationResponsible> allocationResponsibleList = new ArrayList<>();
         for (CSVRecord csvRecord : csvRecordList) {

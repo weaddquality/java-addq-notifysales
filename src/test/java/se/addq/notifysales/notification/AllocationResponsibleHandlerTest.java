@@ -14,6 +14,7 @@ import se.addq.notifysales.cinode.model.Team;
 import se.addq.notifysales.notification.model.AllocationResponsible;
 import se.addq.notifysales.notification.model.AssignmentConsultant;
 import se.addq.notifysales.notification.model.NotificationData;
+import se.addq.notifysales.notification.repository.AllocationResponsibleDataRepository;
 import se.addq.notifysales.utils.CsvFileHandler;
 
 import java.util.ArrayList;
@@ -37,6 +38,9 @@ public class AllocationResponsibleHandlerTest {
     @Mock
     private MissingDataHandler missingDataHandler;
 
+    @Mock
+    private AllocationResponsibleDataRepository allocationResponsibleDataRepositoryMock;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -46,9 +50,22 @@ public class AllocationResponsibleHandlerTest {
     public void setup() {
         CsvFileHandler csvFileHandler = new CsvFileHandler(resourceLoader);
         List<CSVRecord> csvRecordList = csvFileHandler.getListOfCSVRecords("allocation_responsible_test.csv", AllocationCsvHeaders.class);
+        Mockito.when(allocationResponsibleDataRepositoryMock.findAllAllocationResponsible()).thenReturn(getAllocationResponsibleTestData());
         Mockito.when(mockCsvFileHandler.getListOfCSVRecords(Mockito.any(), Mockito.any())).thenReturn(csvRecordList);
         Mockito.when(mockCsvFileHandler.getListOfCSVRecordsAsByteArray(Mockito.anyList(), Mockito.any())).thenReturn(new byte[256]);
-        allocationResponsibleHandler = new AllocationResponsibleHandler(mockCsvFileHandler, missingDataHandler, cinodeApi);
+        allocationResponsibleHandler = new AllocationResponsibleHandler(mockCsvFileHandler, missingDataHandler, cinodeApi, allocationResponsibleDataRepositoryMock);
+    }
+
+    private List<AllocationResponsible> getAllocationResponsibleTestData() {
+        List<AllocationResponsible> allocationResponsibleList = new ArrayList<>();
+        AllocationResponsible allocationResponsible = new AllocationResponsible();
+        allocationResponsible.setTeamId(1206);
+        allocationResponsible.setName("Nisse");
+        allocationResponsible.setTeamName("Test team");
+        allocationResponsible.setSlackUserId("U12345");
+        allocationResponsibleList.add(allocationResponsible);
+        return allocationResponsibleList;
+
     }
 
     @Test

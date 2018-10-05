@@ -7,10 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
-import se.addq.notifysales.notification.repository.MissingDataRepository;
-import se.addq.notifysales.notification.repository.MissingNotificationDataJpaRepository;
-import se.addq.notifysales.notification.repository.NotificationDataJpaRepository;
-import se.addq.notifysales.notification.repository.NotificationRepository;
+import se.addq.notifysales.notification.repository.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,6 +20,9 @@ public class DatabaseConfigContextTest {
     @Mock
     NotificationDataJpaRepository notificationDataJpaRepository;
 
+    @Mock
+    AllocationResponsibleJpaRepository allocationResponsibleJpaRepository;
+
     private DatabaseConfig databaseConfig;
 
     @Before
@@ -32,17 +32,24 @@ public class DatabaseConfigContextTest {
 
 
     @Test
-    public void checkMissingDataHandlerIsCreated() {
+    public void checkMissingDataRepositoryIsCreated() {
 
-        MissingDataRepository missingDataRepository = databaseConfig.missingDataHandlerInit(missingNotificationDataJpaRepository);
+        MissingDataRepository missingDataRepository = databaseConfig.missingDataRepositoryInit(missingNotificationDataJpaRepository);
         assertThat(missingDataRepository).isNotNull();
 
     }
 
     @Test
-    public void checkNotificationHandlerIsCreated() {
-        NotificationRepository notificationRepository = databaseConfig.notificationHandlerInit(notificationDataJpaRepository);
+    public void checkNotificationRepositoryIsCreated() {
+        NotificationRepository notificationRepository = databaseConfig.notificationRepositoryInit(notificationDataJpaRepository);
         assertThat(notificationRepository).isNotNull();
+    }
+
+
+    @Test
+    public void checkAllocationResponsibleRepositoryIsCreated() {
+        AllocationResponsibleDataRepository allocationResponsibleDataRepository = databaseConfig.allocationResponsibleDataRepositoryInit(allocationResponsibleJpaRepository);
+        assertThat(allocationResponsibleDataRepository).isNotNull();
     }
 
     @Test
