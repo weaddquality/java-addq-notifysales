@@ -28,10 +28,10 @@ class NotificationMessageCreator {
     }
 
     private static String getResponsibleAsSlackUserIdOrTextIfMissing(NotificationData notificationData) {
-        if (notificationData.getAllocationResponsible().getSlackUserId().equals("")) {
+        if (notificationData.getAllocationResponsible().getSlackUserId() == null || notificationData.getAllocationResponsible().getSlackUserId().equals("")) {
             return notificationData.getAllocationResponsible().getName();
         }
-        return getSlackFormattedSlackId(notificationData.getAllocationResponsible().getSlackUserId());
+        return notificationData.getAllocationResponsible().getName() + " " + getSlackFormattedSlackId(notificationData.getAllocationResponsible().getSlackUserId());
     }
 
     private static String getSlackFormattedSlackId(String slackId) {

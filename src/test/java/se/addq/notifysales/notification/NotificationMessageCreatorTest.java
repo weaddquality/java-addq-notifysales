@@ -43,7 +43,7 @@ public class NotificationMessageCreatorTest {
 
     @Test
     public void slackMessageWillGetFormattedSlackIdWhenAllocationResponsibleSlackIdIsExisting() {
-        String expectedMessage = "null null uppdrag Super tester på null har avslutsdatum null Team Addq99 Ansvarig <@U12345>";
+        String expectedMessage = "null null uppdrag Super tester på null har avslutsdatum null Team Addq99 Ansvarig Nisse <@U12345>";
         AllocationResponsible allocationResponsible = notificationData.getAllocationResponsible();
         allocationResponsible.setName("Nisse");
         allocationResponsible.setSlackUserId("U12345");
