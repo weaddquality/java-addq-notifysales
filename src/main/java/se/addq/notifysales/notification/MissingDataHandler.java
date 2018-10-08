@@ -66,11 +66,11 @@ public class MissingDataHandler {
         }
     }
 
-    List<MissingNotificationData> getMissingDataNotifyList() {
+    public List<MissingNotificationData> getMissingDataNotifyList() {
         return missingDataNotifyList;
     }
 
-    void persistMissingDataNotifications(MissingNotificationData missingNotificationData) {
+    public void persistMissingDataNotifications(MissingNotificationData missingNotificationData) {
         log.info("Save info about missing notification data to storage");
         missingDataRepository.saveMissingNotificationData(missingNotificationData);
     }
@@ -91,7 +91,7 @@ public class MissingDataHandler {
     }
 
 
-    void clearMissingDataNotifyList() {
+    public void clearMissingDataNotifyList() {
         log.info("Will clear missing data assignments notified");
         missingDataNotifyList.clear();
     }

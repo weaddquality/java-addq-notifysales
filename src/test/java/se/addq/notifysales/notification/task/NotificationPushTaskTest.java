@@ -1,4 +1,4 @@
-package se.addq.notifysales.notification;
+package se.addq.notifysales.notification.task;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+import se.addq.notifysales.notification.NotificationHandler;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.slack.SlackApi;
 

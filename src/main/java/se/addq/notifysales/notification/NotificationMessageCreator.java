@@ -7,14 +7,14 @@ import se.addq.notifysales.notification.model.NotificationData;
 
 import java.lang.invoke.MethodHandles;
 
-class NotificationMessageCreator {
+public class NotificationMessageCreator {
 
     private static final String MESSAGE_FOR_MISSING_TEAM = "Vi saknar data i Cinode för vilket Team användare %s tillhör och kan inte skicka notifiering till Slack %s";
     private static final String MESSAGE_FOR_MISSING_ALLOCATION_RESPONSIBLE = "Vi saknar data för allokeringsansvarig för Team:'%s' och kan inte skicka notifiering till Slack %s";
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    static String getMessageForNotificationEndingAssignment(NotificationData notificationData) {
+    public static String getMessageForNotificationEndingAssignment(NotificationData notificationData) {
         String responsible = getResponsibleAsSlackUserIdOrTextIfMissing(notificationData);
         return String.format("%s %s uppdrag %s på %s har " +
                         "avslutsdatum %s Team %s Ansvarig %s",
@@ -38,7 +38,7 @@ class NotificationMessageCreator {
         return "<@" + slackId + ">";
     }
 
-    static String getMessageForMissingNotificationData(MissingNotificationData missingNotificationData, String slackId) {
+    public static String getMessageForMissingNotificationData(MissingNotificationData missingNotificationData, String slackId) {
 
         switch (missingNotificationData.getMissingdataType()) {
             case MISSING_TEAM_FOR_USER:

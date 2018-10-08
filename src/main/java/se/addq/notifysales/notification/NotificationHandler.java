@@ -45,7 +45,7 @@ public class NotificationHandler {
         this.alreadyNotifiedRepoDataList = getPersistedNotifiedAssignments();
     }
 
-    void addAndPersistNotificationStatus(NotificationData notificationData, String message) {
+    public void addAndPersistNotificationStatus(NotificationData notificationData, String message) {
         log.info("Save notification data to storage");
         NotificationRepoData notificationRepoData = new NotificationRepoData();
         notificationRepoData.setAssignmentId(notificationData.getAssignmentId());
@@ -60,12 +60,12 @@ public class NotificationHandler {
         return alreadyNotifiedRepoDataList;
     }
 
-    List<NotificationData> getAssignmentsToNotifyList() {
+    public List<NotificationData> getAssignmentsToNotifyList() {
         return assignmentsToNotifyList;
     }
 
 
-    void clearAssignmentsToNotify() {
+    public void clearAssignmentsToNotify() {
         log.info("Will clear assignments notified");
         assignmentsToNotifyList.clear();
     }
@@ -87,6 +87,10 @@ public class NotificationHandler {
         }
         notificationDataList.removeAll(incompleteNotificationDataToBeRemoved);
         return notificationDataList;
+    }
+
+    public void clearDbFromAssignments() {
+        notificationRepository.deleteNotifications();
     }
 
 

@@ -1,11 +1,12 @@
 # Notifysales App
 App for notfication to allocation responsible when assignmentResponse is about to end.
 Scheduler set to poll for assignmentResponses ending within a configurable number of weeks
-and posting to a slack channel. Now set to check for ending within 8 weeks.
+and posting to a slack channel. Now set to check for ending within today and 8 weeks ahead.
+A scheduled task resets sent data which will mean notification will be resent if criteria is still valid.
 >Polling and post interval is also configurable in code.
 >The person responsible for allocation per team has to be configured in service.
 >Notified ending assignmentResponses and data not complete is stored in a SQL DB.
-
+>Resets (is emptied) thursday at 9 am every week by default.
 ### Slack setup
 Slack integration is done by adding the web hook URL for the Slack application 
 as a ENV variable. 
@@ -26,6 +27,7 @@ spring.datasource.password=${JDBC_DATABASE_PASSWORD} is set in heroku, need to b
 slack.notification.missingdata.slackid=${MISSING_DATA_SLACK_ID} ex U12345
 slack.missing.data.webhook.url=${SLACK_MISSING_DATA_WEBHOOK_URL} info about missing data channel
 slack.notification.webhook.url=${SLACK_NOTIFICATION_WEBHOOK_URL} allocation notification channel
+slack.notification.reset.cron=${SLACK_NOTIFICATION_RESET_CRON_SCHEDULE:0 0 9 * * THU} job that deletes data for re-send
 ```
 
 ## run from cmd-prompt

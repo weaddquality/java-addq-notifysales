@@ -1,4 +1,4 @@
-package se.addq.notifysales.notification;
+package se.addq.notifysales.notification.task;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import se.addq.notifysales.notification.NotificationHandler;
+import se.addq.notifysales.notification.NotificationMessageCreator;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.slack.SlackApi;
 import se.addq.notifysales.utils.SleepUtil;

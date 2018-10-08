@@ -1,9 +1,10 @@
-package se.addq.notifysales.notification;
+package se.addq.notifysales.notification.task;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
+import se.addq.notifysales.notification.NotificationServiceApi;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

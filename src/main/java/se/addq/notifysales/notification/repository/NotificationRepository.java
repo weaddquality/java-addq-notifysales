@@ -24,6 +24,11 @@ public class NotificationRepository {
         notificationDataJpaRepository.save(notificationRepoData);
     }
 
+    public void deleteNotifications() {
+        log.info("Will delete all notifications in DB");
+        notificationDataJpaRepository.deleteAll();
+    }
+
 
     public List<NotificationRepoData> findAllNotificationData() {
         log.info("Get saved notification data from storage");
