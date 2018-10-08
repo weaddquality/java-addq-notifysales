@@ -12,6 +12,7 @@ import se.addq.notifysales.cinode.model.AssignmentResponse;
 import se.addq.notifysales.cinode.model.Customer;
 import se.addq.notifysales.cinode.model.ProjectAssignmentResponse;
 import se.addq.notifysales.notification.model.AssignmentCustomer;
+import se.addq.notifysales.notification.model.MissingDataType;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.model.NotificationRepoData;
 import se.addq.notifysales.notification.repository.NotificationRepository;
@@ -82,7 +83,7 @@ public class NotificationHandlerTest {
         Mockito.when(cinodeApi.getProjectAssignment(Mockito.anyInt(), Mockito.anyInt())).thenReturn(projectAssignmentResponse);
         List<NotificationData> list = notificationHandler.addAssignmentsToNotificationList(getAssignmentResponse());
         assertThat(list.size()).isZero();
-        verify(missingDataHandler, times(1)).addMissingAssignedForAssignment(Mockito.any(), Mockito.any());
+        verify(missingDataHandler, times(1)).addMissingData(Mockito.any(), Mockito.any(MissingDataType.class), Mockito.anyString());
     }
 
     @Test
@@ -90,7 +91,7 @@ public class NotificationHandlerTest {
         Mockito.when(cinodeApi.getProjectAssignment(Mockito.anyInt(), Mockito.anyInt())).thenReturn(null);
         List<NotificationData> list = notificationHandler.addAssignmentsToNotificationList(getAssignmentResponse());
         assertThat(list.size()).isZero();
-        verify(missingDataHandler, times(1)).addMissingAssignedForAssignment(Mockito.any(), Mockito.any());
+        verify(missingDataHandler, times(1)).addMissingData(Mockito.any(), Mockito.any(MissingDataType.class), Mockito.anyString());
     }
 
     @Test
@@ -137,6 +138,7 @@ public class NotificationHandlerTest {
     private List<AssignmentResponse> getAssignmentResponse() {
         List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
         AssignmentResponse assignmentResponse = new AssignmentResponse();
+        assignmentResponse.setTitle("QA person");
         assignmentResponse.setCompanyId(109);
         assignmentResponse.setCustomerId(12);
         assignmentResponse.setDescription("Tester");

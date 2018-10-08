@@ -13,6 +13,7 @@ import se.addq.notifysales.cinode.CinodeApi;
 import se.addq.notifysales.cinode.model.Team;
 import se.addq.notifysales.notification.model.AllocationResponsible;
 import se.addq.notifysales.notification.model.AssignmentConsultant;
+import se.addq.notifysales.notification.model.MissingDataType;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.repository.AllocationResponsibleDataRepository;
 import se.addq.notifysales.utils.CsvFileHandler;
@@ -98,7 +99,7 @@ public class AllocationResponsibleHandlerTest {
     public void setAllocationResponsibleNoTeamForUserDataRemoved() {
         List<NotificationData> notificationDataList = allocationResponsibleHandler.setAllocationResponsible(getNotificationDataList());
         assertThat(notificationDataList.size()).isZero();
-        verify(missingDataHandler, times(1)).addTeamIsMissingForUser(Mockito.any());
+        verify(missingDataHandler, times(1)).addMissingData(Mockito.any(), Mockito.any(MissingDataType.class), Mockito.anyString());
     }
 
     @Test
@@ -108,7 +109,7 @@ public class AllocationResponsibleHandlerTest {
         Mockito.when(cinodeApi.getTeamsForUser(Mockito.anyInt())).thenReturn(list);
         List<NotificationData> notificationDataList = allocationResponsibleHandler.setAllocationResponsible(getNotificationDataList());
         assertThat(notificationDataList.size()).isZero();
-        verify(missingDataHandler, times(1)).addAllocationResponsibleIsMissingForTeam(Mockito.any(), Mockito.anyString());
+        verify(missingDataHandler, times(1)).addMissingData(Mockito.any(), Mockito.any(MissingDataType.class), Mockito.anyString());
     }
 
     @Test

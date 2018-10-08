@@ -39,28 +39,22 @@ public class MissingDataHandler {
     }
 
 
-    void addTeamIsMissingForUser(NotificationData notificationData) {
+    void addMissingData(NotificationData notificationData, MissingDataType missingDataType, String data) {
+        if (isAlreadyInMissingDataNotifyList(notificationData.getAssignmentId())) {
+            log.info("Missing data already in list");
+            return;
+        }
+        log.info("Found new missing data will add to list");
         MissingNotificationData missingNotificationData = new MissingNotificationData();
         missingNotificationData.setAssignmentId(notificationData.getAssignmentId());
-        missingNotificationData.setMissingdataType(MissingDataType.MISSING_TEAM_FOR_USER);
-        missingNotificationData.setMissingData(notificationData.getAssignmentConsultant().toString());
+        missingNotificationData.setMissingdataType(missingDataType);
+        missingNotificationData.setMissingData(data);
         missingDataNotifyList.add(missingNotificationData);
     }
 
-    void addAllocationResponsibleIsMissingForTeam(NotificationData notificationData, String teamName) {
-        MissingNotificationData missingNotificationData = new MissingNotificationData();
-        missingNotificationData.setAssignmentId(notificationData.getAssignmentId());
-        missingNotificationData.setMissingdataType(MissingDataType.MISSING_ALLOCATION_RESPONSIBLE);
-        missingNotificationData.setMissingData(teamName);
-        missingDataNotifyList.add(missingNotificationData);
-    }
 
-    void addMissingAssignedForAssignment(NotificationData notificationData, String reason) {
-        MissingNotificationData missingNotificationData = new MissingNotificationData();
-        missingNotificationData.setAssignmentId(notificationData.getAssignmentId());
-        missingNotificationData.setMissingdataType(MissingDataType.MISSING_ASSIGNED);
-        missingNotificationData.setMissingData(reason);
-        missingDataNotifyList.add(missingNotificationData);
+    private boolean isAlreadyInMissingDataNotifyList(int assignmentId) {
+        return getMissingDataNotifyList().stream().anyMatch(missing -> missing.getAssignmentId() == assignmentId);
     }
 
 

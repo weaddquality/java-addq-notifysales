@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import se.addq.notifysales.cinode.CinodeApi;
 import se.addq.notifysales.cinode.model.AssignmentResponse;
 import se.addq.notifysales.cinode.model.ProjectAssignmentResponse;
+import se.addq.notifysales.notification.model.MissingDataType;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.model.NotificationRepoData;
 import se.addq.notifysales.notification.repository.NotificationRepository;
@@ -112,7 +113,8 @@ public class NotificationHandler {
             }
         }
         log.warn("Missing assigned for {} will remove from list to notify", notificationData);
-        missingDataHandler.addMissingAssignedForAssignment(notificationData, notificationData.getAssignmentTitle());
+        String assignmentTitle = (assignmentResponse.getTitle() == null) ? "N/A" : assignmentResponse.getTitle();
+        missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_ASSIGNED, assignmentTitle);
         incompleteNotificationDataToBeRemoved.add(notificationData);
         return notificationData;
     }

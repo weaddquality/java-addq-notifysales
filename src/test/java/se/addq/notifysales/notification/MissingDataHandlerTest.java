@@ -38,6 +38,7 @@ public class MissingDataHandlerTest {
         List<MissingNotificationData> missingNotificationDataList = new ArrayList<>();
         MissingNotificationData missingNotificationData = new MissingNotificationData();
         missingNotificationData.setId(10L);
+        missingNotificationData.setMissingdataType(MissingDataType.MISSING_ALLOCATION_RESPONSIBLE);
         missingNotificationData.setAssignmentId(ASSIGNMENT_ID_IN_MISSING_DATA);
         missingNotificationDataList.add(missingNotificationData);
         return missingNotificationDataList;
@@ -60,7 +61,7 @@ public class MissingDataHandlerTest {
         int assignmentIdAdded = 130;
         NotificationData notificationData = getNotificationTestData();
         notificationData.setAssignmentId(assignmentIdAdded);
-        missingDataHandler.addTeamIsMissingForUser(notificationData);
+        missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_TEAM_FOR_USER, "Nisse testare");
         List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
         MissingNotificationData missingNotificationData = missingNotificationDataList.stream().filter(f -> f.getAssignmentId() == assignmentIdAdded).findFirst().orElse(null);
         assertThat(missingNotificationData).isNotNull();
@@ -72,7 +73,7 @@ public class MissingDataHandlerTest {
         NotificationData notificationData = getNotificationTestData();
         int assignmentIdAdded = 131;
         notificationData.setAssignmentId(assignmentIdAdded);
-        missingDataHandler.addAllocationResponsibleIsMissingForTeam(notificationData, "Bad data");
+        missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_ALLOCATION_RESPONSIBLE, "Bad data");
         List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
         MissingNotificationData missingNotificationData = missingNotificationDataList.stream().filter(f -> f.getAssignmentId() == assignmentIdAdded).findFirst().orElse(null);
         assertThat(missingNotificationData).isNotNull();
@@ -84,11 +85,25 @@ public class MissingDataHandlerTest {
         NotificationData notificationData = getNotificationTestData();
         int assignmentIdAdded = 132;
         notificationData.setAssignmentId(assignmentIdAdded);
-        missingDataHandler.addMissingAssignedForAssignment(notificationData, "Bad data");
+        missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_ASSIGNED, "Bad data");
         List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
         MissingNotificationData missingNotificationData = missingNotificationDataList.stream().filter(f -> f.getAssignmentId() == assignmentIdAdded).findFirst().orElse(null);
         assertThat(missingNotificationData).isNotNull();
         assertThat(missingNotificationData.getMissingdataType()).isEqualTo(MissingDataType.MISSING_ASSIGNED);
+    }
+
+    @Test
+    public void shouldNotAddToMissingDataListWhenAlreadyInList() {
+        NotificationData notificationData = getNotificationTestData();
+        int assignmentIdAdded = ASSIGNMENT_ID_IN_MISSING_DATA;
+        notificationData.setAssignmentId(assignmentIdAdded);
+        List<MissingNotificationData> missingNotificationDataListBefore = missingDataHandler.getMissingDataNotifyList();
+        missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_ASSIGNED, "Bad data");
+        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
+        MissingNotificationData missingNotificationData = missingNotificationDataList.stream().filter(f -> f.getAssignmentId() == assignmentIdAdded).findFirst().orElse(null);
+        assertThat(missingNotificationData).isNotNull();
+        assertThat(missingNotificationDataList.size()).isOne();
+        assertThat(missingNotificationDataListBefore.size()).isOne();
     }
 
 
