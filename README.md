@@ -9,8 +9,9 @@ A scheduled task resets sent data which will mean notification will be resent if
 >Resets (is emptied) thursday at 9 am every week by default.
 ### Slack setup
 Slack integration is done by adding the web hook URL for the Slack application 
-as a ENV variable. 
->The notifications will be sent to all channels where the app is installed.
+as a ENV variable.  
+>The webhook URL for the combination of channel and app is configured from the app.
+>Check https://api.slack.com/apps
 
 ## build with maven
 ```
