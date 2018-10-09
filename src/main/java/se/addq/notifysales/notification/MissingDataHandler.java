@@ -18,18 +18,20 @@ public class MissingDataHandler {
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final List<MissingNotificationData> missingDataNotifyList;
+    private final List<MissingNotificationData> missingDataToBeNotifiedList = new ArrayList<>();
+
+    private final List<MissingNotificationData> alreadyNotifiedMissingDataList;
 
     private final MissingDataRepository missingDataRepository;
 
     @Autowired
     public MissingDataHandler(MissingDataRepository missingDataRepository) {
         this.missingDataRepository = missingDataRepository;
-        this.missingDataNotifyList = getPersistedMissingNotificationData();
+        this.alreadyNotifiedMissingDataList = getPersistedMissingNotificationData();
     }
 
     boolean isIncompleteDataForNotification(int assignmentId) {
-        for (MissingNotificationData missingNotificationData : getMissingDataNotifyList()) {
+        for (MissingNotificationData missingNotificationData : getAlreadyNotifiedMissingDataList()) {
             if (assignmentId == missingNotificationData.getAssignmentId()) {
                 log.debug("AssignmentResponse has not complete data {}", assignmentId);
                 return true;
@@ -40,7 +42,7 @@ public class MissingDataHandler {
 
 
     void addMissingData(NotificationData notificationData, MissingDataType missingDataType, String data) {
-        if (isAlreadyInMissingDataNotifyList(notificationData.getAssignmentId())) {
+        if (isAlreadyInNotifiedMissingDataList(notificationData.getAssignmentId())) {
             log.info("Missing data already in list");
             return;
         }
@@ -49,30 +51,45 @@ public class MissingDataHandler {
         missingNotificationData.setAssignmentId(notificationData.getAssignmentId());
         missingNotificationData.setMissingdataType(missingDataType);
         missingNotificationData.setMissingData(data);
-        missingDataNotifyList.add(missingNotificationData);
+        missingDataToBeNotifiedList.add(missingNotificationData);
     }
 
-
-    private boolean isAlreadyInMissingDataNotifyList(int assignmentId) {
-        return getMissingDataNotifyList().stream().anyMatch(missing -> missing.getAssignmentId() == assignmentId);
+    public List<MissingNotificationData> getMissingDataReadyToBeNotifiedList() {
+        return missingDataToBeNotifiedList;
     }
 
-
-    void removeFromMissingDataIfExisting(int assignmentId) {
-        for (MissingNotificationData missingNotificationData : missingDataNotifyList) {
-            if (missingNotificationData.getAssignmentId() == assignmentId) {
-                removeMissingNotificationDataFromDb(assignmentId);
-            }
-        }
+    public void clearMissingDataNotifiedList(List<MissingNotificationData> missingNotificationDataList) {
+        log.info("Will clear missing data assignments already notified");
+        missingDataToBeNotifiedList.removeAll(missingNotificationDataList);
     }
 
-    public List<MissingNotificationData> getMissingDataNotifyList() {
-        return missingDataNotifyList;
+    List<MissingNotificationData> getAlreadyNotifiedMissingDataList() {
+        return alreadyNotifiedMissingDataList;
     }
+
+    public void addAlreadyNotifiedMissingData(MissingNotificationData missingNotificationData) {
+        alreadyNotifiedMissingDataList.add(missingNotificationData);
+    }
+
 
     public void persistMissingDataNotifications(MissingNotificationData missingNotificationData) {
         log.info("Save info about missing notification data to storage");
         missingDataRepository.saveMissingNotificationData(missingNotificationData);
+    }
+
+
+    void removeFromMissingDataIfExisting(int assignmentId) {
+        MissingNotificationData missingNotificationData = alreadyNotifiedMissingDataList.stream().filter(missingData -> missingData.getAssignmentId() == assignmentId).findFirst().orElse(null);
+        if (missingNotificationData != null) {
+            log.info("Will remove fixed data from notified missing data list {}", missingNotificationData);
+            removeMissingNotificationDataFromDb(assignmentId);
+            alreadyNotifiedMissingDataList.remove(missingNotificationData);
+        }
+    }
+
+
+    private boolean isAlreadyInNotifiedMissingDataList(int assignmentId) {
+        return getAlreadyNotifiedMissingDataList().stream().anyMatch(missing -> missing.getAssignmentId() == assignmentId);
     }
 
     private List<MissingNotificationData> getPersistedMissingNotificationData() {
@@ -88,12 +105,6 @@ public class MissingDataHandler {
         MissingNotificationData missingNotificationData = missingDataRepository.findByAssignmentId(assignmentId);
         log.info("Will delete Missing Notification Data item {}", missingNotificationData);
         missingDataRepository.delete(missingNotificationData);
-    }
-
-
-    public void clearMissingDataNotifyList() {
-        log.info("Will clear missing data assignments notified");
-        missingDataNotifyList.clear();
     }
 
 

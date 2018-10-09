@@ -20,8 +20,6 @@ public class NotificationDataJpaRepositoryTest {
     @Autowired
     private NotificationDataJpaRepository notificationDataJpaRepository;
 
-    private LocalDateTime localDateTime;
-
     @Before
     public void setUp() {
         LocalDateTime localDateTime = LocalDateTime.now();
@@ -41,6 +39,17 @@ public class NotificationDataJpaRepositoryTest {
             count++;
         }
         assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    public void deleteAllWillEmptyNotificationRepoDataInNotificationDb() {
+        notificationDataJpaRepository.deleteAll();
+        Iterable<NotificationRepoData> notificationDataIterable = notificationDataJpaRepository.findAll();
+        int count = 0;
+        for (NotificationRepoData ignored : notificationDataIterable) {
+            count++;
+        }
+        assertThat(count).isEqualTo(0);
     }
 
     @After

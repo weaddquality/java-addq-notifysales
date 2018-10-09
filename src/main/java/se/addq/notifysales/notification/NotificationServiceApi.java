@@ -5,7 +5,5 @@ public interface NotificationServiceApi {
 
     void updateAssignmentsToNotify();
 
-    byte[] getAllocationResponsibleConfiguration();
-
     String getListOfNotifiedAssignments();
 }

@@ -75,6 +75,14 @@ public class NotificationHandlerTest {
         assertThat(sizeAfter).isLessThan(sizeBefore);
     }
 
+    @Test
+    public void clearDbFromAssignmentsToNotify() {
+        notificationHandler.clearSendNotificationHistory();
+        List<NotificationRepoData> notificationRepoDataList = notificationHandler.getAlreadyNotifiedAssignments();
+        assertThat(notificationRepoDataList).isEmpty();
+        verify(notificationRepository, times(1)).deleteNotifications();
+    }
+
 
     @Test
     public void shouldGetAddedToMissingDataWhenAssignmentResponseAssignedIsNull() {

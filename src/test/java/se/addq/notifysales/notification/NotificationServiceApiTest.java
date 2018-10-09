@@ -9,7 +9,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import se.addq.notifysales.cinode.model.AssignmentResponse;
 import se.addq.notifysales.notification.model.NotificationRepoData;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,14 +88,5 @@ public class NotificationServiceApiTest {
                 "} ]");
     }
 
-    @Test
-    public void getAllocationConfiguration() {
-        String testString = "NAME,TEAM_NAME,TEAM_ID,SLACK_USER_ID,SLACK_CHANNEL\n" +
-                "Nisse,Super Team,1,U12345,The test channel\n";
-        byte bytes[] = testString.getBytes();
-        Mockito.when(allocationResponsibleHandler.getAllocationResponsibleListAsByteArray()).thenReturn(bytes);
-        byte[] allocationConfiguration = notificationServiceApi.getAllocationResponsibleConfiguration();
-        assertThat(new String(allocationConfiguration, StandardCharsets.UTF_8)).isEqualTo(testString);
-    }
 
 }

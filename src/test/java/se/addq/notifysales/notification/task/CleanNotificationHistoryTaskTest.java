@@ -28,7 +28,6 @@ public class CleanNotificationHistoryTaskTest {
     @Test
     public void cleanNotificationSentListAndRemoveFromDb() {
         resetNotificationHistoryTask.cleanNotificationSentListAndRemoveFromDb();
-        verify(notificationHandler, times(1)).clearAssignmentsToNotify();
-        verify(notificationHandler, times(1)).clearDbFromAssignments();
+        verify(notificationHandler, times(1)).clearSendNotificationHistory();
     }
 }

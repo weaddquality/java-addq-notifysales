@@ -40,11 +40,6 @@ class NotificationService implements NotificationServiceApi {
         notificationHandler.assignmentsToNotifyAdd(notificationDataListWithAllocationResp);
     }
 
-    @Override
-    public byte[] getAllocationResponsibleConfiguration() {
-        return allocationResponsibleHandler.getAllocationResponsibleListAsByteArray();
-    }
-
 
     @Override
     public String getListOfNotifiedAssignments() {

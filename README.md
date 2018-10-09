@@ -1,5 +1,5 @@
 # Notifysales App
-App for notfication to allocation responsible when assignmentResponse is about to end.
+App for notification to allocation responsible when assignmentResponse is about to end.
 Scheduler set to poll for assignmentResponses ending within a configurable number of weeks
 and posting to a slack channel. Now set to check for ending within today and 8 weeks ahead.
 A scheduled task resets sent data which will mean notification will be resent if criteria is still valid.

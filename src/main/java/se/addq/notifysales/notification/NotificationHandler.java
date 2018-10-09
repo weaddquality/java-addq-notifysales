@@ -89,7 +89,17 @@ public class NotificationHandler {
         return notificationDataList;
     }
 
-    public void clearDbFromAssignments() {
+    public void clearSendNotificationHistory() {
+        clearDbFromAssignments();
+        clearAlreadyNotifiedAssignments();
+    }
+
+    private void clearAlreadyNotifiedAssignments() {
+        log.info("Will clear all already notified assignments in memory");
+        alreadyNotifiedRepoDataList.clear();
+    }
+
+    private void clearDbFromAssignments() {
         notificationRepository.deleteNotifications();
     }
 

@@ -13,6 +13,7 @@ import se.addq.notifysales.slack.SlackApi;
 import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -42,10 +43,11 @@ class MissingDataPushTask {
     @Scheduled(fixedRate = POLLING_INTERVAL_MISSING_DATA_MS, initialDelay = POLLING_INTERVAL_MISSING_DATA_DELAY_MS)
     void notifyAboutAssignmentsWithMissingData() {
         log.info("Notify slack about assignments missing data  -> interval {} hours", POLLING_INTERVAL_MISSING_DATA_MS / 60 * 1000);
-        List<MissingNotificationData> missingDataForAssignments = missingDataHandler.getMissingDataNotifyList();
+        List<MissingNotificationData> missingDataForAssignments = missingDataHandler.getMissingDataReadyToBeNotifiedList();
         if (missingDataForAssignments.isEmpty()) {
             log.info("No missing data assignments to notify about!");
         } else {
+            List<MissingNotificationData> missingNotificationDataNotifedList = new ArrayList<>();
             for (MissingNotificationData missingNotificationData : missingDataForAssignments) {
                 if (missingNotificationData.isNotified()) {
                     continue;
@@ -56,14 +58,16 @@ class MissingDataPushTask {
                     log.warn("Can not send / store message due to missing data! {}", missingDataForAssignments);
                     continue;
                 }
-                if (slackApi.sendNotification(message, slackWebhookUrl)) {
-                    missingNotificationData.setNotified(true);
-                } else {
+                if (!slackApi.sendNotification(message, slackWebhookUrl)) {
                     log.warn("Failed to send message to Slack. Will re-try later!");
+                    continue;
                 }
+                missingNotificationData.setNotified(true);
+                missingDataHandler.addAlreadyNotifiedMissingData(missingNotificationData);
                 missingDataHandler.persistMissingDataNotifications(missingNotificationData);
+                missingNotificationDataNotifedList.add(missingNotificationData);
             }
-            missingDataHandler.clearMissingDataNotifyList();
+            missingDataHandler.clearMissingDataNotifiedList(missingNotificationDataNotifedList);
         }
 
     }

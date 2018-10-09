@@ -36,8 +36,8 @@ class ResetNotificationHistoryTask {
     @Scheduled(cron = cronPropertyName, zone = TIMEZONE_EUROPE_STOCKHOLM)
     void cleanNotificationSentListAndRemoveFromDb() {
         log.info("Reset of send history for notifications -> interval cron:'{}'", cronValue);
-        notificationHandler.clearDbFromAssignments();
-        notificationHandler.clearAssignmentsToNotify();
+        notificationHandler.clearSendNotificationHistory();
+
     }
 
 

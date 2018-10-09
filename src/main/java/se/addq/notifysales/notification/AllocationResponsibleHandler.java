@@ -1,6 +1,5 @@
 package se.addq.notifysales.notification;
 
-import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import se.addq.notifysales.notification.model.AllocationResponsible;
 import se.addq.notifysales.notification.model.MissingDataType;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.repository.AllocationResponsibleDataRepository;
-import se.addq.notifysales.utils.CsvFileHandler;
 import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
@@ -23,23 +21,18 @@ class AllocationResponsibleHandler {
 
     private final List<AllocationResponsible> allocationResponsibleList;
 
-    private final CsvFileHandler csvFileHandler;
-
     private final CinodeApi cinodeApi;
 
     private MissingDataHandler missingDataHandler;
 
     private AllocationResponsibleDataRepository allocationResponsibleDataRepository;
 
-    private static final String ALLOCATION_RESPONSIBLE_SOURCE_FILE_PATH = "allocation_responsible_default.csv";
-
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final List<NotificationData> incompleteNotificationDataToBeRemoved = new ArrayList<>();
 
     @Autowired
-    AllocationResponsibleHandler(CsvFileHandler csvFileHandler, MissingDataHandler missingDataHandler, CinodeApi cinodeApi, AllocationResponsibleDataRepository allocationResponsibleDataRepository) {
-        this.csvFileHandler = csvFileHandler;
+    AllocationResponsibleHandler(MissingDataHandler missingDataHandler, CinodeApi cinodeApi, AllocationResponsibleDataRepository allocationResponsibleDataRepository) {
         this.allocationResponsibleDataRepository = allocationResponsibleDataRepository;
         this.allocationResponsibleList = getAllocationResponsibleResourceAsList();
         this.cinodeApi = cinodeApi;
@@ -89,46 +82,8 @@ class AllocationResponsibleHandler {
         return new AllocationResponsible();
     }
 
-
-    byte[] getAllocationResponsibleListAsByteArray() {
-        return csvFileHandler.getListOfCSVRecordsAsByteArray(mapAllocationResponsibleToListOfStringArray(allocationResponsibleList), AllocationCsvHeaders.class);
-    }
-
-
     private List<AllocationResponsible> getAllocationResponsibleResourceAsList() {
         return allocationResponsibleDataRepository.findAllAllocationResponsible();
-    }
-
-    /*
-        private List<AllocationResponsible> getAllocationResponsibleResourceAsList() {
-            List<CSVRecord> csvRecordList = csvFileHandler.getListOfCSVRecords(ALLOCATION_RESPONSIBLE_SOURCE_FILE_PATH, AllocationCsvHeaders.class);
-            return mapCsvToAllocationResponsible(csvRecordList);
-        }
-
-    */
-    private List<AllocationResponsible> mapCsvToAllocationResponsible(List<CSVRecord> csvRecordList) {
-        List<AllocationResponsible> allocationResponsibleList = new ArrayList<>();
-        for (CSVRecord csvRecord : csvRecordList) {
-            AllocationResponsible allocationResponsible = new AllocationResponsible();
-            allocationResponsible.setName(csvRecord.get(AllocationCsvHeaders.NAME));
-            allocationResponsible.setTeamName(csvRecord.get(AllocationCsvHeaders.TEAM_NAME));
-            allocationResponsible.setTeamId(Integer.parseInt(csvRecord.get(AllocationCsvHeaders.TEAM_ID)));
-            allocationResponsible.setSlackUserId(csvRecord.get(AllocationCsvHeaders.SLACK_USER_ID));
-            allocationResponsible.setSlackChannel(csvRecord.get(AllocationCsvHeaders.SLACK_CHANNEL));
-            allocationResponsibleList.add(allocationResponsible);
-        }
-        return allocationResponsibleList;
-    }
-
-    private List<String[]> mapAllocationResponsibleToListOfStringArray(List<AllocationResponsible> allocationResponsibles) {
-        List<String[]> allocationResponsibleList = new ArrayList<>();
-        for (AllocationResponsible allocationResponsible : allocationResponsibles) {
-            String[] csvRecordData = {allocationResponsible.getName(), allocationResponsible.getTeamName(),
-                    String.valueOf(allocationResponsible.getTeamId()), allocationResponsible.getSlackUserId(),
-                    allocationResponsible.getSlackChannel()};
-            allocationResponsibleList.add(csvRecordData);
-        }
-        return allocationResponsibleList;
     }
 
 

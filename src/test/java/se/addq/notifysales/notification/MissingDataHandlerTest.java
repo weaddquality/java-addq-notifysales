@@ -34,15 +34,6 @@ public class MissingDataHandlerTest {
         missingDataHandler = new MissingDataHandler(missingDataRepositoryMock);
     }
 
-    private List<MissingNotificationData> getMissingNotificationTestDataList() {
-        List<MissingNotificationData> missingNotificationDataList = new ArrayList<>();
-        MissingNotificationData missingNotificationData = new MissingNotificationData();
-        missingNotificationData.setId(10L);
-        missingNotificationData.setMissingdataType(MissingDataType.MISSING_ALLOCATION_RESPONSIBLE);
-        missingNotificationData.setAssignmentId(ASSIGNMENT_ID_IN_MISSING_DATA);
-        missingNotificationDataList.add(missingNotificationData);
-        return missingNotificationDataList;
-    }
 
     @Test
     public void isIncompleteDataForNotificationIsTrue() {
@@ -62,7 +53,7 @@ public class MissingDataHandlerTest {
         NotificationData notificationData = getNotificationTestData();
         notificationData.setAssignmentId(assignmentIdAdded);
         missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_TEAM_FOR_USER, "Nisse testare");
-        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
+        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataReadyToBeNotifiedList();
         MissingNotificationData missingNotificationData = missingNotificationDataList.stream().filter(f -> f.getAssignmentId() == assignmentIdAdded).findFirst().orElse(null);
         assertThat(missingNotificationData).isNotNull();
         assertThat(missingNotificationData.getMissingdataType()).isEqualTo(MissingDataType.MISSING_TEAM_FOR_USER);
@@ -74,7 +65,7 @@ public class MissingDataHandlerTest {
         int assignmentIdAdded = 131;
         notificationData.setAssignmentId(assignmentIdAdded);
         missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_ALLOCATION_RESPONSIBLE, "Bad data");
-        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
+        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataReadyToBeNotifiedList();
         MissingNotificationData missingNotificationData = missingNotificationDataList.stream().filter(f -> f.getAssignmentId() == assignmentIdAdded).findFirst().orElse(null);
         assertThat(missingNotificationData).isNotNull();
         assertThat(missingNotificationData.getMissingdataType()).isEqualTo(MissingDataType.MISSING_ALLOCATION_RESPONSIBLE);
@@ -86,7 +77,7 @@ public class MissingDataHandlerTest {
         int assignmentIdAdded = 132;
         notificationData.setAssignmentId(assignmentIdAdded);
         missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_ASSIGNED, "Bad data");
-        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
+        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataReadyToBeNotifiedList();
         MissingNotificationData missingNotificationData = missingNotificationDataList.stream().filter(f -> f.getAssignmentId() == assignmentIdAdded).findFirst().orElse(null);
         assertThat(missingNotificationData).isNotNull();
         assertThat(missingNotificationData.getMissingdataType()).isEqualTo(MissingDataType.MISSING_ASSIGNED);
@@ -97,13 +88,24 @@ public class MissingDataHandlerTest {
         NotificationData notificationData = getNotificationTestData();
         int assignmentIdAdded = ASSIGNMENT_ID_IN_MISSING_DATA;
         notificationData.setAssignmentId(assignmentIdAdded);
-        List<MissingNotificationData> missingNotificationDataListBefore = missingDataHandler.getMissingDataNotifyList();
+        List<MissingNotificationData> missingNotificationDataListBefore = missingDataHandler.getAlreadyNotifiedMissingDataList();
         missingDataHandler.addMissingData(notificationData, MissingDataType.MISSING_ASSIGNED, "Bad data");
-        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
-        MissingNotificationData missingNotificationData = missingNotificationDataList.stream().filter(f -> f.getAssignmentId() == assignmentIdAdded).findFirst().orElse(null);
-        assertThat(missingNotificationData).isNotNull();
-        assertThat(missingNotificationDataList.size()).isOne();
-        assertThat(missingNotificationDataListBefore.size()).isOne();
+        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataReadyToBeNotifiedList();
+        assertThat(missingNotificationDataList).isEmpty();
+        assertThat(missingNotificationDataListBefore.get(0).getAssignmentId()).isEqualTo(assignmentIdAdded);
+    }
+
+
+    @Test
+    public void shouldAddToAlreadyNotifiedList() {
+        int assignmentIdAdded = 102;
+        MissingNotificationData missingNotificationData = new MissingNotificationData();
+        missingNotificationData.setMissingdataType(MissingDataType.MISSING_ALLOCATION_RESPONSIBLE);
+        missingNotificationData.setId(99L);
+        missingNotificationData.setAssignmentId(assignmentIdAdded);
+        missingDataHandler.addAlreadyNotifiedMissingData(missingNotificationData);
+        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getAlreadyNotifiedMissingDataList();
+        assertThat(missingNotificationDataList.size()).isEqualTo(getMissingNotificationTestDataList().size() + 1);
     }
 
 
@@ -122,9 +124,19 @@ public class MissingDataHandlerTest {
 
     @Test
     public void clearAssignmentsToNotify() {
-        missingDataHandler.clearMissingDataNotifyList();
-        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataNotifyList();
+        missingDataHandler.clearMissingDataNotifiedList(getMissingNotificationTestDataList());
+        List<MissingNotificationData> missingNotificationDataList = missingDataHandler.getMissingDataReadyToBeNotifiedList();
         assertThat(missingNotificationDataList).isEmpty();
+    }
+
+    private List<MissingNotificationData> getMissingNotificationTestDataList() {
+        List<MissingNotificationData> missingNotificationDataList = new ArrayList<>();
+        MissingNotificationData missingNotificationData = new MissingNotificationData();
+        missingNotificationData.setId(10L);
+        missingNotificationData.setMissingdataType(MissingDataType.MISSING_ALLOCATION_RESPONSIBLE);
+        missingNotificationData.setAssignmentId(ASSIGNMENT_ID_IN_MISSING_DATA);
+        missingNotificationDataList.add(missingNotificationData);
+        return missingNotificationDataList;
     }
 
 

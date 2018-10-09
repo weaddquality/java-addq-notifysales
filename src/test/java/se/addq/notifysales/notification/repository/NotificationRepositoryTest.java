@@ -45,6 +45,12 @@ public class NotificationRepositoryTest {
         assertThat(notificationRepoDataList.size()).isOne();
     }
 
+    @Test
+    public void deleteAllNotificationData() {
+        notificationRepository.deleteNotifications();
+        verify(notificationDataJpaRepository, times(1)).deleteAll();
+    }
+
     private NotificationRepoData getNotificationRepoData() {
         NotificationRepoData notificationRepoData = new NotificationRepoData();
         notificationRepoData.setId(1L);

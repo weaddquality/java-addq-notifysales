@@ -1,6 +1,5 @@
 package se.addq.notifysales.notification;
 
-import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,7 +15,6 @@ import se.addq.notifysales.notification.model.AssignmentConsultant;
 import se.addq.notifysales.notification.model.MissingDataType;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.repository.AllocationResponsibleDataRepository;
-import se.addq.notifysales.utils.CsvFileHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +27,6 @@ import static org.mockito.Mockito.verify;
 public class AllocationResponsibleHandlerTest {
 
     private static final int TEAM_ID_EXISTING_IN_CSV_TEST_FILE = 1206;
-
-    @Mock
-    private CsvFileHandler mockCsvFileHandler;
 
     @Mock
     private CinodeApi cinodeApi;
@@ -49,12 +44,8 @@ public class AllocationResponsibleHandlerTest {
 
     @Before
     public void setup() {
-        CsvFileHandler csvFileHandler = new CsvFileHandler(resourceLoader);
-        List<CSVRecord> csvRecordList = csvFileHandler.getListOfCSVRecords("allocation_responsible_test.csv", AllocationCsvHeaders.class);
         Mockito.when(allocationResponsibleDataRepositoryMock.findAllAllocationResponsible()).thenReturn(getAllocationResponsibleTestData());
-        Mockito.when(mockCsvFileHandler.getListOfCSVRecords(Mockito.any(), Mockito.any())).thenReturn(csvRecordList);
-        Mockito.when(mockCsvFileHandler.getListOfCSVRecordsAsByteArray(Mockito.anyList(), Mockito.any())).thenReturn(new byte[256]);
-        allocationResponsibleHandler = new AllocationResponsibleHandler(mockCsvFileHandler, missingDataHandler, cinodeApi, allocationResponsibleDataRepositoryMock);
+        allocationResponsibleHandler = new AllocationResponsibleHandler(missingDataHandler, cinodeApi, allocationResponsibleDataRepositoryMock);
     }
 
     private List<AllocationResponsible> getAllocationResponsibleTestData() {
@@ -89,11 +80,6 @@ public class AllocationResponsibleHandlerTest {
         assertThat(allocationResponsible.getName()).isEqualTo("");
     }
 
-    @Test
-    public void getByteArrayForAllocationResponsibleList() {
-        byte[] responsibleListAsByteArray = allocationResponsibleHandler.getAllocationResponsibleListAsByteArray();
-        assertThat(responsibleListAsByteArray.length).isEqualTo(256);
-    }
 
     @Test
     public void setAllocationResponsibleNoTeamForUserDataRemoved() {
