@@ -4,7 +4,7 @@
 
     <groupId>se.addq</groupId>
     <artifactId>notifysales</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <distributionManagement>
@@ -18,7 +18,7 @@
         <connection>scm:git:git@github.com:weaddquality/java-addq-notifysales.git</connection>
         <url>scm:git:git@github.com:weaddquality/java-addq-notifysales.git</url>
         <developerConnection>scm:git:git@github.com:weaddquality/java-addq-notifysales.git</developerConnection>
-      <tag>v0.0.2</tag>
+      <tag>v0.0.1</tag>
   </scm>
 
     <name>notifysales</name>
