@@ -9,8 +9,8 @@
 
     <distributionManagement>
         <repository>
-            <id>nexus-releases</id>
-            <url>http://localhost:8081/repository/maven-releases/</url>
+            <id>nexus-local</id>
+            <url>http://localhost:8081/repository/nexus-local/</url>
         </repository>
     </distributionManagement>
 
@@ -134,9 +134,15 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.5.1</version>
                         <executions>
                             <execution>
                                 <id>default-deploy</id>
@@ -147,8 +153,8 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <serverId>nexus-releases</serverId>
-                            <nexusUrl>http://localhost:8081/repository/maven-releases/</nexusUrl>
+                            <serverId>nexus</serverId>
+                            <nexusUrl>http://localhost:8081/nexus/</nexusUrl>
                             <skipStaging>true</skipStaging>
                         </configuration>
                     </plugin>
