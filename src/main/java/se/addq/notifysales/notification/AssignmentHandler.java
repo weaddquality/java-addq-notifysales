@@ -9,7 +9,6 @@ import se.addq.notifysales.cinode.CinodeApi;
 import se.addq.notifysales.cinode.model.AssignmentResponse;
 import se.addq.notifysales.cinode.model.ProjectList;
 import se.addq.notifysales.cinode.model.ProjectResponse;
-import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
@@ -21,6 +20,7 @@ import java.util.List;
 @Component
 class AssignmentHandler {
 
+    public static final int DELAY_POLL_PROJECT_IN_MILLISECONDS = 500;
     private boolean fetchProjects = true;
 
     @Value("${cinode.projects.group.size}")
@@ -30,6 +30,7 @@ class AssignmentHandler {
     private int weeksBeforeAssignmentEndsToNotify;
     @Value("${slack.notification.after.weeks}")
     private int weeksAfterAssignmentEndsToNotify;
+
 
 
     private final List<Integer> projectsToFetch = new ArrayList<>();
@@ -44,29 +45,37 @@ class AssignmentHandler {
         this.cinodeApi = cinodeApi;
     }
 
-
-    List<AssignmentResponse> getEndingAssignments() {
-        List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
+    List<AssignmentResponse> getEndingAssignmentsForBatch() {
+        fetchAllProjectsFromCinode();
         List<Integer> projectsResponseList = getProjectSublistToCheckForAssignments();
+        return fetchAssignmentListFromCinode(projectsResponseList);
+    }
+
+    boolean moreProjectsToFetch() {
+        return projectsToFetch.size() > 0;
+    }
+
+
+    private List<AssignmentResponse> fetchAssignmentListFromCinode(List<Integer> projectsResponseList) {
+        List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
         for (Integer projectId : projectsResponseList) {
             ProjectResponse projectResponse = getProject(projectId);
             if (projectResponse == null) {
                 log.warn("Got empty response for projectId {}", projectId);
                 continue;
             }
-            SleepUtil.sleepMilliSeconds(500);
             List<AssignmentResponse> notificationDataListForProject = addAssignmentsToNotificationList(projectResponse.getAssignmentResponses());
             assignmentResponseList.addAll(notificationDataListForProject);
         }
         return assignmentResponseList;
     }
 
-    private List<Integer> getProjectSublistToCheckForAssignments() {
+    private void fetchAllProjectsFromCinode() {
         if (fetchProjects) {
             List<ProjectList> projectListList = cinodeApi.getProjects();
             if (projectListList == null) {
                 log.error("No projects returned!");
-                return new ArrayList<>();
+                return;
             }
             fetchProjects = false;
             projectListList.sort(Collections.reverseOrder(Comparator.comparing(ProjectList::getId)));
@@ -74,10 +83,13 @@ class AssignmentHandler {
                 projectsToFetch.add(projectResponse.getId());
             }
         }
+    }
+
+    private List<Integer> getProjectSublistToCheckForAssignments() {
         int lastIndex = numberOfProjectsToFetch;
         if (projectsToFetch.size() < numberOfProjectsToFetch) {
             lastIndex = projectsToFetch.size();
-            fetchProjects = true; //TODO: Add a scheduler to set this?
+            fetchProjects = true;
         }
         List<Integer> subList = new ArrayList<>(projectsToFetch.subList(0, lastIndex));
         projectsToFetch.subList(0, lastIndex).clear();

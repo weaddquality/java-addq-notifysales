@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import se.addq.notifysales.cinode.model.*;
+import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.time.Duration;
@@ -35,6 +36,8 @@ public class CinodeImpl implements CinodeApi {
 
     @Value("${cinode.addq.company.id}")
     private int addQCompanyId;
+    @Value("${cinode.request.interval.ms}")
+    private int cinodeRequestIntervalInMilliSeconds;
 
     private final static String API_VERSION = "v0.1";
 
@@ -105,6 +108,7 @@ public class CinodeImpl implements CinodeApi {
 
     @Override
     public ProjectResponse getProject(int id) {
+        SleepUtil.sleepMilliSeconds(cinodeRequestIntervalInMilliSeconds);
         HttpEntity<String> entity = new HttpEntity<>(getHttpHeadersWithToken());
         ResponseEntity<ProjectResponse> projectResponseResponseEntity = restTemplate.exchange(getBaseUrlForCompany() + "/projects/" + id, HttpMethod.GET, entity, new ParameterizedTypeReference<ProjectResponse>() {
         });
@@ -118,6 +122,7 @@ public class CinodeImpl implements CinodeApi {
 
     @Override
     public ProjectAssignmentResponse getProjectAssignment(int projectId, int assignmentId) {
+        SleepUtil.sleepMilliSeconds(cinodeRequestIntervalInMilliSeconds);
         HttpEntity<String> entity = new HttpEntity<>(getHttpHeadersWithToken());
         ResponseEntity<ProjectAssignmentResponse> assignmentResponseResponseEntity = restTemplate.exchange(getBaseUrlForCompany() + "/projects/" + projectId + "/projectassignments/" + assignmentId, HttpMethod.GET, entity, new ParameterizedTypeReference<ProjectAssignmentResponse>() {
         });
@@ -131,6 +136,7 @@ public class CinodeImpl implements CinodeApi {
 
     @Override
     public List<Team> getTeamsForUser(int userId) {
+        SleepUtil.sleepMilliSeconds(cinodeRequestIntervalInMilliSeconds);
         HttpEntity<String> entity = new HttpEntity<>(getHttpHeadersWithToken());
         ResponseEntity<List<Team>> listResponseEntity = restTemplate.exchange(getBaseUrlForCompany() + "/users/" + userId + "/teams/", HttpMethod.GET, entity, new ParameterizedTypeReference<List<Team>>() {
         });

@@ -10,7 +10,6 @@ import se.addq.notifysales.notification.NotificationHandler;
 import se.addq.notifysales.notification.NotificationMessageCreator;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.slack.SlackApi;
-import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -48,7 +47,6 @@ class NotificationPushTask {
                 for (NotificationData notificationData : assignmentsToNotify) {
                     if (notificationData.isReadyToBeNotified()) {
                         log.info("AssignmentResponse ready to notify {}", notificationData);
-                        SleepUtil.sleepMilliSeconds(500);
                         String message = NotificationMessageCreator.getMessageForNotificationEndingAssignment(notificationData);
                         if (slackApi.sendNotification(message, slackWebhookUrl)) {
                             notificationHandler.addAndPersistNotificationStatus(notificationData, message);

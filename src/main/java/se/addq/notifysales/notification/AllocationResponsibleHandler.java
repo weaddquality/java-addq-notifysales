@@ -10,7 +10,6 @@ import se.addq.notifysales.notification.model.AllocationResponsible;
 import se.addq.notifysales.notification.model.MissingDataType;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.repository.AllocationResponsibleDataRepository;
-import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -37,9 +36,7 @@ class AllocationResponsibleHandler {
         this.allocationResponsibleList = getAllocationResponsibleResourceAsList();
         this.cinodeApi = cinodeApi;
         this.missingDataHandler = missingDataHandler;
-
     }
-
 
     List<NotificationData> setAllocationResponsible(List<NotificationData> notificationDataList) {
         incompleteNotificationDataToBeRemoved.clear();
@@ -54,7 +51,6 @@ class AllocationResponsibleHandler {
             notificationData.getAssignmentConsultant().setTeamName(teams.get(0).getName());
             notificationData.getAssignmentConsultant().setTeamId(teams.get(0).getId());
 
-            SleepUtil.sleepMilliSeconds(500);
             AllocationResponsible allocationResponsible = getAllocationResponsibleForTeam(teams.get(0));
             if (allocationResponsible.getName() == null || allocationResponsible.getName().equals("")) {
                 log.warn("Missing configuration for team {}, will remove from notification list", teams.get(0).getName());

@@ -49,7 +49,7 @@ public class AssignmentHandlerTest {
     @Test
     public void shouldGetEmptyListReturnedWhenCinodeGetProjectsReturnsNull() {
         Mockito.when(cinodeApi.getProjects()).thenReturn(null);
-        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignmentsForBatch();
         assertThat(assignmentResponseList).isEmpty();
     }
 
@@ -57,7 +57,7 @@ public class AssignmentHandlerTest {
     @Test
     public void shouldGetEmptyListReturnedWhenCinodeGetProjectReturnsNull() {
         Mockito.when(cinodeApi.getProject(Mockito.anyInt())).thenReturn(null);
-        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignmentsForBatch();
         assertThat(assignmentResponseList).isEmpty();
     }
 
@@ -65,7 +65,7 @@ public class AssignmentHandlerTest {
     public void shouldGetListWhenEndDateToday() {
         ProjectResponse projectResponse = getProjectResponseEndingToday();
         Mockito.when(cinodeApi.getProject(Mockito.anyInt())).thenReturn(projectResponse);
-        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignmentsForBatch();
         assertThat(assignmentResponseList.size()).isEqualTo(projectListList.size());
     }
 
@@ -73,7 +73,7 @@ public class AssignmentHandlerTest {
     public void shouldGetListEndDateWithinEightWeeks() {
         ProjectResponse projectResponse = getProjectResponseEndingWithinEightWeeks();
         Mockito.when(cinodeApi.getProject(Mockito.anyInt())).thenReturn(projectResponse);
-        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignmentsForBatch();
         assertThat(assignmentResponseList.size()).isEqualTo(projectListList.size());
     }
 
@@ -81,7 +81,7 @@ public class AssignmentHandlerTest {
     public void shouldNotGetListWhenEndDateMoreThanEightWeeksFromToday() {
         ProjectResponse projectResponse = getProjectResponseEndingInNineWeeks();
         Mockito.when(cinodeApi.getProject(Mockito.anyInt())).thenReturn(projectResponse);
-        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignmentsForBatch();
         assertThat(assignmentResponseList.size()).isEqualTo(0);
     }
 
@@ -89,7 +89,15 @@ public class AssignmentHandlerTest {
     public void shouldNotGetListWhenEndDateBeforeToday() {
         ProjectResponse projectResponse = getProjectResponseEndingBeforeToday();
         Mockito.when(cinodeApi.getProject(Mockito.anyInt())).thenReturn(projectResponse);
-        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignmentsForBatch();
+        assertThat(assignmentResponseList.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldNotGetListWhenEndDateNull() {
+        ProjectResponse projectResponse = getProjectResponseEndingDateNotSet();
+        Mockito.when(cinodeApi.getProject(Mockito.anyInt())).thenReturn(projectResponse);
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignmentsForBatch();
         assertThat(assignmentResponseList.size()).isEqualTo(0);
     }
 
@@ -99,8 +107,15 @@ public class AssignmentHandlerTest {
         ProjectResponse projectResponse = getProjectResponseEndingToday();
         projectResponse.setAssignmentResponses(null);
         Mockito.when(cinodeApi.getProject(Mockito.anyInt())).thenReturn(projectResponse);
-        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignments();
+        List<AssignmentResponse> assignmentResponseList = assignmentHandler.getEndingAssignmentsForBatch();
         assertThat(assignmentResponseList).isEmpty();
+    }
+
+
+    @Test
+    public void shouldGetFalseIfNoProjectsToFetch() {
+        boolean isMore = assignmentHandler.moreProjectsToFetch();
+        assertThat(isMore).isFalse();
     }
 
     private ProjectResponse getProjectResponseEndingToday() {
@@ -146,4 +161,16 @@ public class AssignmentHandlerTest {
         projectResponse.setAssignmentResponses(assignmentResponseList);
         return projectResponse;
     }
+
+    private ProjectResponse getProjectResponseEndingDateNotSet() {
+        ProjectResponse projectResponse = new ProjectResponse();
+        AssignmentResponse assignmentResponseBeforeToday = new AssignmentResponse();
+        assignmentResponseBeforeToday.setId(124);
+        List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
+        assignmentResponseList.add(assignmentResponseBeforeToday);
+        projectResponse.setAssignmentResponses(assignmentResponseList);
+        return projectResponse;
+    }
+
+
 }

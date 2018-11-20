@@ -12,7 +12,6 @@ import se.addq.notifysales.notification.model.MissingDataType;
 import se.addq.notifysales.notification.model.NotificationData;
 import se.addq.notifysales.notification.model.NotificationRepoData;
 import se.addq.notifysales.notification.repository.NotificationRepository;
-import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
@@ -115,7 +114,6 @@ public class NotificationHandler {
         log.info("Get project assignment for project {} and assignment Id {}", notificationData);
         ProjectAssignmentResponse projectAssignmentResponse = cinodeApi.getProjectAssignment(assignmentResponse.getProjectId(), assignmentResponse.getId());
 
-        SleepUtil.sleepMilliSeconds(500);
         if (projectAssignmentResponse != null) {
             if (projectAssignmentResponse.getAssigned() != null) {
                 notificationData.getAssignmentConsultant().setFirstName(projectAssignmentResponse.getAssigned().getFirstName());

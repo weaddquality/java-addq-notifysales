@@ -17,4 +17,12 @@ public class SleepUtil {
             log.error("Failed to sleep", e);
         }
     }
+
+    public static void sleepMinutes(int minutes) {
+        try {
+            TimeUnit.MINUTES.sleep(minutes);
+        } catch (InterruptedException e) {
+            log.error("Failed to sleep", e);
+        }
+    }
 }

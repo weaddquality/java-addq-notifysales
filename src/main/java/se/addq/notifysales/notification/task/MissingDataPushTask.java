@@ -10,7 +10,6 @@ import se.addq.notifysales.notification.MissingDataHandler;
 import se.addq.notifysales.notification.NotificationMessageCreator;
 import se.addq.notifysales.notification.model.MissingNotificationData;
 import se.addq.notifysales.slack.SlackApi;
-import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -52,7 +51,6 @@ class MissingDataPushTask {
                 if (missingNotificationData.isNotified()) {
                     continue;
                 }
-                SleepUtil.sleepMilliSeconds(500);
                 String message = NotificationMessageCreator.getMessageForMissingNotificationData(missingNotificationData, slackIdForUserToNotifyWhenDataMissing);
                 if ("".equals(message)) {
                     log.warn("Can not send / store message due to missing data! {}", missingDataForAssignments);

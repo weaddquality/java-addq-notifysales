@@ -40,7 +40,7 @@ public class NotificationServiceApiTest {
 
     @Test
     public void updateAssignmentsToNotifyIsToBeNotifiedIsTrue() {
-        Mockito.when(assignmentHandler.getEndingAssignments()).thenReturn(getListOfAssignmentResponse());
+        Mockito.when(assignmentHandler.getEndingAssignmentsForBatch()).thenReturn(getListOfAssignmentResponse());
         Mockito.when(notificationHandler.isToBeNotified(Mockito.anyInt())).thenReturn(true);
         notificationServiceApi.updateAssignmentsToNotify();
         verify(notificationHandler, times(1)).addAssignmentsToNotificationList(Mockito.any());
@@ -50,7 +50,7 @@ public class NotificationServiceApiTest {
 
     @Test
     public void updateAssignmentsToNotifyIsToBeNotifiedIsFalse() {
-        Mockito.when(assignmentHandler.getEndingAssignments()).thenReturn(getListOfAssignmentResponse());
+        Mockito.when(assignmentHandler.getEndingAssignmentsForBatch()).thenReturn(getListOfAssignmentResponse());
         Mockito.when(notificationHandler.isToBeNotified(Mockito.anyInt())).thenReturn(false);
         notificationServiceApi.updateAssignmentsToNotify();
         verify(notificationHandler, times(1)).addAssignmentsToNotificationList(Mockito.any());

@@ -1,11 +1,11 @@
 # Notifysales App
-App for notification to allocation responsible when assignmentResponse is about to end.
-Scheduler set to poll for assignmentResponses ending within a configurable number of weeks
+App for notification to allocation responsible when assignment is about to end.
+Scheduler set to poll for assignment ending within a configurable number of weeks
 and posting to a slack channel. Now set to check for ending within today and 8 weeks ahead.
 A scheduled task resets sent data which will mean notification will be resent if criteria is still valid.
 >Polling and post interval is also configurable in code.
 >The person responsible for allocation per team has to be configured in service.
->Notified ending assignmentResponses and data not complete is stored in a SQL DB.
+>Notified ending assignment and data not complete is stored in a SQL DB.
 >Resets (is emptied) thursday at 9 am every week by default.
 ### Slack setup
 Slack integration is done by adding the web hook URL for the Slack application 
@@ -50,8 +50,8 @@ Requires heroku cli and heroku account connected to service to deploy.
 To re-deploy the service with a new version
 ```
 >heroku deploy:jar target/notifysales-0.0.1-SNAPSHOT.jar --app rocky-anchorage-42328
->heroku open --app rocky-anchorage-42328
->heroku logs --app rocky-anchorage-42328 --tail
+>heroku open --app <app-name>
+>heroku logs --app <app-name> --tail
 ```
 
 ### for new deploys
@@ -64,6 +64,6 @@ To deploy a completely new service with another name.
 To make the service go to sleep it can be scaled down to 0 dynos.
 It is also possible to block REST access by setting the maintenance to on.
 ```
->heroku maintenance:on --app rocky-anchorage-42328
->heroku ps:scale web=0 --app rocky-anchorage-42328
+>heroku maintenance:on --app <app-name>
+>heroku ps:scale web=0 --app <app-name>
 ```

@@ -22,7 +22,7 @@ class ResetNotificationHistoryTask {
     // The cron pattern is a list of six single space-separated fields:
     // representing second, minute, hour, day, month, weekday.
     // Month and weekday names can be given as the first three letters of the English names.
-    //Run every thursday at 9 example, 0 0 9 * * THU
+    //Run every thursday at 9 example, 0 0 8 * * THU
     private final static String cronPropertyName = "${slack.notification.reset.cron}";
 
     @Value(cronPropertyName)

@@ -3,6 +3,7 @@ package se.addq.notifysales.slack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import se.addq.notifysales.slack.model.SlackNotification;
 import se.addq.notifysales.utils.JsonUtil;
+import se.addq.notifysales.utils.SleepUtil;
 
 import java.lang.invoke.MethodHandles;
 
@@ -22,6 +24,9 @@ public class SlackWebHookImpl implements SlackApi {
 
     private final RestTemplate restTemplate;
 
+    @Value("${slack.request.interval.ms}")
+    private int slackRequestIntervalInMilliSeconds;
+
     @Autowired
     SlackWebHookImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -29,6 +34,7 @@ public class SlackWebHookImpl implements SlackApi {
 
     @Override
     public boolean sendNotification(String message, String webHookURL) {
+        SleepUtil.sleepMilliSeconds(slackRequestIntervalInMilliSeconds);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
         headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
