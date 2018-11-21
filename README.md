@@ -22,18 +22,19 @@ Add environment variables
 ```
 cinode.password=${CINODE_PASSWORD} set to account to run service as needs full Cinode access.
 cinode.user=${CINODE_USER} set to account to run service as needs full Cinode access.
+cinode.poll.cron=${CINODE_POLL_CRON_SCHEDULE:0 0 8 * * *} schedule for job to fetch all projects in batches
 spring.datasource.jdbc-url=${JDBC_DATABASE_URL} is set in heroku, need to be set locally
 spring.datasource.username=${JDBC_DATABASE_USERNAME} is set in heroku, need to be set locally
 spring.datasource.password=${JDBC_DATABASE_PASSWORD} is set in heroku, need to be set locally
 slack.notification.missingdata.slackid=${MISSING_DATA_SLACK_ID} ex U12345
 slack.missing.data.webhook.url=${SLACK_MISSING_DATA_WEBHOOK_URL} info about missing data channel
 slack.notification.webhook.url=${SLACK_NOTIFICATION_WEBHOOK_URL} allocation notification channel
-slack.notification.reset.cron=${SLACK_NOTIFICATION_RESET_CRON_SCHEDULE:0 0 9 * * THU} job that deletes data for re-send
+slack.notification.reset.cron=${SLACK_NOTIFICATION_RESET_CRON_SCHEDULE:0 30 7 * * THU}  schedule for job that deletes data for re-send
 ```
 
 ## run from cmd-prompt
 ```
->java -jar target/notifysales-0.0.1-SNAPSHOT.jar
+>java -jar target/notifysales-<version>.jar
 ```
 
 ## swagger 
@@ -49,7 +50,7 @@ Requires heroku cli and heroku account connected to service to deploy.
 ### re-deploys
 To re-deploy the service with a new version
 ```
->heroku deploy:jar target/notifysales-0.0.1-SNAPSHOT.jar --app rocky-anchorage-42328
+>heroku deploy:jar target/notifysales-<version>.jar --app <app-name>
 >heroku open --app <app-name>
 >heroku logs --app <app-name> --tail
 ```

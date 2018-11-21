@@ -11,6 +11,7 @@ public class NotificationMessageCreator {
 
     private static final String MESSAGE_FOR_MISSING_TEAM = "Vi saknar data i Cinode för vilket Team användare %s tillhör och kan inte skicka notifiering till Slack %s";
     private static final String MESSAGE_FOR_MISSING_ALLOCATION_RESPONSIBLE = "Vi saknar data för allokeringsansvarig för Team:'%s' och kan inte skicka notifiering till Slack %s";
+    private static final String MESSAGE_FOR_MISSING_ASSIGNED = "Vi saknar data för ansvarig konsult för uppdrag:'%s' och kan inte skicka notifiering till Slack %s";
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -49,6 +50,8 @@ public class NotificationMessageCreator {
                 return String.format(MESSAGE_FOR_MISSING_ALLOCATION_RESPONSIBLE,
                         missingNotificationData.getMissingData(),
                         getSlackFormattedSlackId(slackId));
+            case MISSING_ASSIGNED:
+                return String.format(MESSAGE_FOR_MISSING_ASSIGNED, missingNotificationData.getMissingData(), getSlackFormattedSlackId(slackId));
             default:
                 log.warn("Missing data type for message to be created! {}", missingNotificationData.getMissingdataType());
                 return "";

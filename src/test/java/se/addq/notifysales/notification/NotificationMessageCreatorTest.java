@@ -74,5 +74,18 @@ public class NotificationMessageCreatorTest {
         assertThat(actualMessage).isEqualTo(expectedMessage);
     }
 
+    @Test
+    public void slackMessageForMissingAssigned() {
+        String expectedMessage = "Vi saknar data för ansvarig konsult för uppdrag:'NotificationData{isReadyToBeNotified=false, assignmentCustomer=AssignmentCustomer{id=0, name='null'}, projectId=0, assignmentId=0, assignmentTitle='Testare på verket', assignmentConsultant=AssignmentConsultant{userId=0, firstName='null', lastName='null', teamName='null', teamId=0}, startDate=null, endDate=null, allocationResponsible=AllocationResponsible{id=null, name='', slackChannel='', slackUserId='', teamId=0, teamName=''}}' och kan inte skicka notifiering till Slack <@U12345>";
+        MissingNotificationData missingNotificationData = new MissingNotificationData();
+        missingNotificationData.setAssignmentId(11111);
+        NotificationData notificationData = new NotificationData();
+        notificationData.setAssignmentTitle("Testare på verket");
+        missingNotificationData.setMissingData(notificationData.toString());
+        missingNotificationData.setMissingdataType(MissingDataType.MISSING_ASSIGNED);
+        String actualMessage = NotificationMessageCreator.getMessageForMissingNotificationData(missingNotificationData, "U12345");
+        assertThat(actualMessage).isEqualTo(expectedMessage);
+    }
+
 
 }

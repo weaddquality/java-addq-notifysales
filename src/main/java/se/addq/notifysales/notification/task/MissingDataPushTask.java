@@ -41,7 +41,7 @@ class MissingDataPushTask {
 
     @Scheduled(fixedRate = POLLING_INTERVAL_MISSING_DATA_MS, initialDelay = POLLING_INTERVAL_MISSING_DATA_DELAY_MS)
     void notifyAboutAssignmentsWithMissingData() {
-        log.info("Notify slack about assignments missing data  -> interval {} hours", POLLING_INTERVAL_MISSING_DATA_MS / 60 * 1000);
+        log.info("Notify slack about assignments missing data  -> interval {} ", POLLING_INTERVAL_MISSING_DATA_MS / (60 * 1000));
         List<MissingNotificationData> missingDataForAssignments = missingDataHandler.getMissingDataReadyToBeNotifiedList();
         if (missingDataForAssignments.isEmpty()) {
             log.info("No missing data assignments to notify about!");
