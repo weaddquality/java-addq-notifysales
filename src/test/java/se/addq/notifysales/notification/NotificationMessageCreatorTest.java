@@ -31,7 +31,7 @@ public class NotificationMessageCreatorTest {
 
     @Test
     public void slackMessageWillGetUserNameWhenAllocationResponsibleSlackIdIsMissing() {
-        String expectedMessage = "null null uppdrag Super tester på null har avslutsdatum null Team Addq99 Ansvarig Nisse";
+        String expectedMessage = "null null uppdrag Super tester på null har avslutsdatum `null`\nTeam Addq99\nAnsvarig Nisse\nSäljansvarig Nomen Nescio";
         AllocationResponsible allocationResponsible = notificationData.getAllocationResponsible();
         allocationResponsible.setName("Nisse");
         allocationResponsible.setSlackUserId("");
@@ -43,7 +43,7 @@ public class NotificationMessageCreatorTest {
 
     @Test
     public void slackMessageWillGetFormattedSlackIdWhenAllocationResponsibleSlackIdIsExisting() {
-        String expectedMessage = "null null uppdrag Super tester på null har avslutsdatum null Team Addq99 Ansvarig Nisse <@U12345>";
+        String expectedMessage = "null null uppdrag Super tester på null har avslutsdatum `null`\nTeam Addq99\nAnsvarig Nisse <@U12345>\nSäljansvarig Nomen Nescio";
         AllocationResponsible allocationResponsible = notificationData.getAllocationResponsible();
         allocationResponsible.setName("Nisse");
         allocationResponsible.setSlackUserId("U12345");
@@ -76,7 +76,7 @@ public class NotificationMessageCreatorTest {
 
     @Test
     public void slackMessageForMissingAssigned() {
-        String expectedMessage = "Vi saknar data för ansvarig konsult för uppdrag:'NotificationData{isReadyToBeNotified=false, assignmentCustomer=AssignmentCustomer{id=0, name='null'}, projectId=0, assignmentId=0, assignmentTitle='Testare på verket', assignmentConsultant=AssignmentConsultant{userId=0, firstName='null', lastName='null', teamName='null', teamId=0}, startDate=null, endDate=null, allocationResponsible=AllocationResponsible{id=null, name='', slackChannel='', slackUserId='', teamId=0, teamName=''}}' och kan inte skicka notifiering till Slack <@U12345>";
+        String expectedMessage = "Vi saknar data för ansvarig konsult för uppdrag:'NotificationData{isReadyToBeNotified=false, assignmentCustomer=AssignmentCustomer{id=0, name='null'}, projectId=0, assignmentId=0, assignmentTitle='Testare på verket', assignmentConsultant=AssignmentConsultant{userId=0, firstName='null', lastName='null', teamName='null', teamId=0}, startDate=null, endDate=null, allocationResponsible=AllocationResponsible{id=null, name='', slackChannel='', slackUserId='', teamId=0, teamName=''}, salesManager=Nomen Nescio}' och kan inte skicka notifiering till Slack <@U12345>";
         MissingNotificationData missingNotificationData = new MissingNotificationData();
         missingNotificationData.setAssignmentId(11111);
         NotificationData notificationData = new NotificationData();

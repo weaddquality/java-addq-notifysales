@@ -48,7 +48,6 @@ public class NotificationHandlerTest {
         Mockito.when(cinodeApi.getProjectAssignment(Mockito.anyInt(), Mockito.anyInt())).thenReturn(getProjectAssignment());
     }
 
-
     @Test
     public void addAndPersistNotificationStatusDataStoredInRepoList() {
         notificationHandler.addAndPersistNotificationStatus(getNotificationDataList().get(0), "Hej hej");
@@ -56,7 +55,6 @@ public class NotificationHandlerTest {
         List<NotificationRepoData> notificationRepoDataList = notificationHandler.getAlreadyNotifiedAssignments();
         assertThat(notificationRepoDataList.get(0).getAssignmentId()).isEqualTo(getNotificationDataList().get(0).getAssignmentId());
     }
-
 
     @Test
     public void getAssignmentsToNotify() {
@@ -83,7 +81,6 @@ public class NotificationHandlerTest {
         verify(notificationRepository, times(1)).deleteNotifications();
     }
 
-
     @Test
     public void shouldGetAddedToMissingDataWhenAssignmentResponseAssignedIsNull() {
         ProjectAssignmentResponse projectAssignmentResponse = getProjectAssignment();
@@ -107,7 +104,6 @@ public class NotificationHandlerTest {
         List<NotificationData> list = notificationHandler.addAssignmentsToNotificationList(getAssignmentResponse());
         assertThat(list.size()).isOne();
     }
-
 
     @Test
     public void isToBeNotifiedReturnsFalseWhenInToBeNotifiedList() {
