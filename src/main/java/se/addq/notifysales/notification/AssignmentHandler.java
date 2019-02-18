@@ -32,7 +32,6 @@ class AssignmentHandler {
     private int weeksAfterAssignmentEndsToNotify;
 
 
-
     private final List<Integer> projectsToFetch = new ArrayList<>();
 
     private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -55,7 +54,6 @@ class AssignmentHandler {
         return projectsToFetch.size() > 0;
     }
 
-
     private List<AssignmentResponse> fetchAssignmentListFromCinode(List<Integer> projectsResponseList) {
         List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
         for (Integer projectId : projectsResponseList) {
@@ -64,7 +62,7 @@ class AssignmentHandler {
                 log.warn("Got empty response for projectId {}", projectId);
                 continue;
             }
-            List<AssignmentResponse> notificationDataListForProject = addAssignmentsToNotificationList(projectResponse.getAssignmentResponses());
+            List<AssignmentResponse> notificationDataListForProject = addAssignmentsToNotificationList(projectResponse);
             assignmentResponseList.addAll(notificationDataListForProject);
         }
         return assignmentResponseList;
@@ -97,28 +95,31 @@ class AssignmentHandler {
         return subList;
     }
 
-
     private ProjectResponse getProject(int projectId) {
         return cinodeApi.getProject(projectId);
     }
 
-
-    private List<AssignmentResponse> addAssignmentsToNotificationList(List<AssignmentResponse> assignmentResponseList) {
+    private List<AssignmentResponse> addAssignmentsToNotificationList(ProjectResponse projectResponse) {
+        List<AssignmentResponse> assignmentResponseList = projectResponse.getAssignmentResponses();
         if (assignmentResponseList == null) {
             log.warn("Project did not contain assignment!");
             return new ArrayList<>();
         }
         List<AssignmentResponse> notEndingAssignmentsList = new ArrayList<>();
         for (AssignmentResponse assignmentResponse : assignmentResponseList) {
-            log.debug("Assignments: {} {} {} {}", assignmentResponse.getTitle(), assignmentResponse.getDescription(), assignmentResponse.getStartDate(), assignmentResponse.getEndDate());
+            log.debug("Assignments: {} {} {} {}",
+                    assignmentResponse.getTitle(),
+                    assignmentResponse.getDescription(),
+                    assignmentResponse.getStartDate(),
+                    assignmentResponse.getEndDate());
             if (!checkIfAssignmentIsEnding(assignmentResponse)) {
                 notEndingAssignmentsList.add(assignmentResponse);
             }
+            assignmentResponse.setSalesManager(projectResponse.getSalesManager());
         }
         assignmentResponseList.removeAll(notEndingAssignmentsList);
         return assignmentResponseList;
     }
-
 
     private boolean checkIfAssignmentIsEnding(AssignmentResponse assignmentResponse) {
         if (assignmentResponse.getEndDate() == null) {
@@ -135,6 +136,4 @@ class AssignmentHandler {
         return assignmentResponse.getEndDate().isBefore(LocalDateTime.now().plusWeeks(weeksBeforeAssignmentEndsToNotify))
                 && assignmentResponse.getEndDate().isAfter(LocalDateTime.now().minusWeeks(weeksAfterAssignmentEndsToNotify));
     }
-
-
 }

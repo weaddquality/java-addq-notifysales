@@ -13,6 +13,8 @@ public class ProjectResponse {
 
     private Customer customer;
 
+    private SalesManager salesManager;
+
     public List<AssignmentResponse> getAssignmentResponses() {
         return assignmentResponses;
     }
@@ -29,11 +31,20 @@ public class ProjectResponse {
         this.customer = customer;
     }
 
+    public SalesManager getSalesManager() {
+        return salesManager;
+    }
+
+    public void setSalesManager(SalesManager salesManager) {
+        this.salesManager = salesManager;
+    }
+
     @Override
     public String toString() {
         return "ProjectResponse{" +
                 "assignmentResponses=" + assignmentResponses +
                 ", customer=" + customer +
+                ", salesManager=" + salesManager +
                 '}';
     }
 }

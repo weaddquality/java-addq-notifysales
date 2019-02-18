@@ -18,14 +18,18 @@ public class NotificationMessageCreator {
     public static String getMessageForNotificationEndingAssignment(NotificationData notificationData) {
         String responsible = getResponsibleAsSlackUserIdOrTextIfMissing(notificationData);
         return String.format("%s %s uppdrag %s på %s har " +
-                        "avslutsdatum %s Team %s Ansvarig %s",
+                        "avslutsdatum `%s`\n" +
+                        "Team %s\n" +
+                        "Ansvarig %s\n" +
+                        "Säljansvarig %s",
                 notificationData.getAssignmentConsultant().getFirstName(),
                 notificationData.getAssignmentConsultant().getLastName(),
                 notificationData.getAssignmentTitle(),
                 notificationData.getAssignmentCustomer().getName(),
                 notificationData.getEndDate(),
                 notificationData.getAllocationResponsible().getTeamName(),
-                responsible);
+                responsible,
+                notificationData.getSalesManager());
     }
 
     private static String getResponsibleAsSlackUserIdOrTextIfMissing(NotificationData notificationData) {

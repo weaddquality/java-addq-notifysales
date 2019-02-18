@@ -1,6 +1,8 @@
 package se.addq.notifysales.notification.model;
 
 
+import se.addq.notifysales.cinode.model.SalesManager;
+
 import java.time.LocalDateTime;
 
 
@@ -23,6 +25,8 @@ public class NotificationData {
     private LocalDateTime endDate;
 
     private AllocationResponsible allocationResponsible = new AllocationResponsible();
+
+    private SalesManager salesManager = new SalesManager();
 
     public boolean isReadyToBeNotified() {
         return isReadyToBeNotified;
@@ -58,6 +62,14 @@ public class NotificationData {
 
     public AllocationResponsible getAllocationResponsible() {
         return allocationResponsible;
+    }
+
+    public SalesManager getSalesManager() {
+        return salesManager;
+    }
+
+    public void setSalesManager(SalesManager salesManager) {
+        this.salesManager = salesManager;
     }
 
     public AssignmentCustomer getAssignmentCustomer() {
@@ -100,6 +112,7 @@ public class NotificationData {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", allocationResponsible=" + allocationResponsible +
+                ", salesManager=" + salesManager +
                 '}';
     }
 }

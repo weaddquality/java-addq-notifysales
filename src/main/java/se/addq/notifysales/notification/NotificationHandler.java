@@ -110,6 +110,7 @@ public class NotificationHandler {
         notificationData.setAssignmentTitle(assignmentResponse.getTitle());
         notificationData.setEndDate(assignmentResponse.getEndDate());
         notificationData.setStartDate(assignmentResponse.getStartDate());
+        notificationData.setSalesManager(assignmentResponse.getSalesManager());
 
         log.info("Get project assignment for project {} and assignment Id {}", notificationData);
         ProjectAssignmentResponse projectAssignmentResponse = cinodeApi.getProjectAssignment(assignmentResponse.getProjectId(), assignmentResponse.getId());

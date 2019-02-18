@@ -75,6 +75,30 @@ public class CinodeImplTest {
     }
 
     @Test
+    public void getProjectShallReturnSalesManager() {
+        ProjectResponse response = new ProjectResponse();
+        SalesManager salesManager = new SalesManager();
+        salesManager.setFirstName("Förnamn");
+        salesManager.setLastName("Efternamn");
+        response.setSalesManager(salesManager);
+        setMockitoProjectResponse(response);
+        ProjectResponse projectResponse = cinodeApi.getProject(1);
+        assertThat(projectResponse.getSalesManager().getFirstName()).isEqualTo("Förnamn");
+        assertThat(projectResponse.getSalesManager().getLastName()).isEqualTo("Efternamn");
+    }
+
+    @Test
+    public void getProjectWithoutSalesManagerHasDefaultValue() {
+        ProjectResponse response = new ProjectResponse();
+        SalesManager salesManager = new SalesManager();
+        response.setSalesManager(salesManager);
+        setMockitoProjectResponse(response);
+        ProjectResponse projectResponse = cinodeApi.getProject(1);
+        assertThat(projectResponse.getSalesManager().getFirstName()).isNotBlank();
+        assertThat(projectResponse.getSalesManager().getLastName()).isNotBlank();
+    }
+
+    @Test
     public void getCompaniesShouldReturnListOfCompaniesIfResponseIsOk() {
         setMockitoGetCompaniesResponse();
         List<CompaniesResponse> companiesResponseList = cinodeApi.getCompanies();

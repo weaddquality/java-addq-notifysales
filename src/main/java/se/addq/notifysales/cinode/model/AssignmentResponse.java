@@ -18,6 +18,7 @@ public class AssignmentResponse {
     private LocalDateTime startDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDateTime endDate;
+    private SalesManager salesManager;
 
     public int getCompanyId() {
         return companyId;
@@ -41,6 +42,15 @@ public class AssignmentResponse {
 
     public void setProjectId(int projectId) {
         this.projectId = projectId;
+    }
+
+
+    public void setSalesManager(SalesManager salesManager) {
+        this.salesManager = salesManager;
+    }
+
+    public SalesManager getSalesManager() {
+        return salesManager;
     }
 
     public int getId() {
@@ -87,7 +97,6 @@ public class AssignmentResponse {
         }
     }
 
-
     @Override
     public String toString() {
         return "AssignmentResponse{" +
@@ -99,6 +108,7 @@ public class AssignmentResponse {
                 ", description='" + description + '\'' +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
+                ", salesManager=" + salesManager +
                 '}';
     }
 }
