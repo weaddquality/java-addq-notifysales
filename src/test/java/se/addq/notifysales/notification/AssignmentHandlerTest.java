@@ -133,7 +133,7 @@ public class AssignmentHandlerTest {
         ProjectResponse projectResponse = new ProjectResponse();
         AssignmentResponse assignmentResponseEightWeeks = new AssignmentResponse();
         assignmentResponseEightWeeks.setId(123);
-        assignmentResponseEightWeeks.setEndDate(LocalDateTime.now().plusWeeks(8).toString());
+        assignmentResponseEightWeeks.setEndDate(LocalDateTime.now().plusWeeks(8).minusMinutes(1).toString());
         List<AssignmentResponse> assignmentResponseList = new ArrayList<>();
         assignmentResponseList.add(assignmentResponseEightWeeks);
         projectResponse.setAssignmentResponses(assignmentResponseList);
