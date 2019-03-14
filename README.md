@@ -18,6 +18,18 @@ as a ENV variable.
 ```
 mvnw.cmd clean install
 ```
+
+## Release with maven
+Skapar en release version och steppar pom till nästa snapshot
+Kolla att allt är ok först med dry run
+```
+mvn release:prepare -DdryRun=true  
+
+mvn release:prepare
+
+mvn release:perform
+```
+
 ## Properties
 Add environment variables
 ```
