@@ -23,6 +23,10 @@ public class NotificationRepositoryTest {
 
     private NotificationRepository notificationRepository;
 
+    private static final String LONG_MESSAGE = "Hans Svensson Johansson uppdrag Testledare väldigt agilt" +
+            " - Avtalet är tillsvidare med två månaders uppsägning på Trafikförsäkringsföreningen har avslutsdatum" +
+            "`2019-09-30T00:00`\nTeam ADDQ 2 Continuous\nAnsvarig Nils-Sven Högsten <@U02GPV07G>\nSäljansvarig Nils-Sven Högsten";
+
     @Before
     public void setup() {
         notificationRepository = new NotificationRepository(notificationDataJpaRepository);
@@ -31,6 +35,7 @@ public class NotificationRepositoryTest {
     @Test
     public void saveNotificationData() {
         NotificationRepoData notificationRepoData = getNotificationRepoData();
+        notificationRepoData.setMessage(LONG_MESSAGE);
         notificationRepository.saveNotificationData(notificationRepoData);
         verify(notificationDataJpaRepository, times(1)).save(Mockito.any());
     }

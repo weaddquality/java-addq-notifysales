@@ -1,9 +1,6 @@
 package se.addq.notifysales.notification.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,6 +14,7 @@ public class NotificationRepoData {
 
     private int assignmentId;
 
+    @Column(columnDefinition="text")
     private String message;
 
     public Long getId() {
